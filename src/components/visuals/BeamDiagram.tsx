@@ -1,0 +1,258 @@
+"use client";
+
+import { useReducedMotion } from "framer-motion";
+import { Mail, Package, PackageX, ScanBarcode, Truck, type LucideIcon } from "lucide-react";
+import { createRef, useMemo, useRef, type RefObject } from "react";
+import { LogoMark } from "@/components/brand/LogoMark";
+import { AnimatedBeam } from "@/components/ui/animated-beam";
+import { beam } from "@/content/site";
+import { colors } from "@/lib/colors";
+import { cn } from "@/lib/utils";
+
+/*
+ * Signals → Blend → your brands, built on Magic UI's Animated Beam
+ * ("Multiple Inputs" layout). Icons only: no carrier names or logos.
+ *
+ * - No `step`: hero mode. Every signal pulses into Blend; Blend pulses to "$".
+ * - `step` 0 / 1 / 2 (How it works): 0 highlights one signal, 1 sends it into
+ *   Blend, 2 sends the money on to "$".
+ * With prefers-reduced-motion, paths render static with no traveling pulse.
+ */
+
+/** Same order as beam.signals in site.ts. */
+const ICONS: LucideIcon[] = [PackageX, Package, Mail, ScanBarcode, Truck];
+
+type Step = 0 | 1 | 2;
+type Size = "hero" | "step";
+
+/* Hero is compact at lg (narrow 5-column slot) and largest at xl. */
+const SIZES: Record<Size, Record<string, string>> = {
+  hero: {
+    node: "size-11 rounded-xl sm:size-14 sm:rounded-2xl lg:size-12 lg:rounded-xl xl:size-[4.25rem] xl:rounded-2xl",
+    icon: "size-5 sm:size-6 lg:size-5 xl:size-7",
+    gap: "gap-3 sm:gap-4 lg:gap-3.5 xl:gap-5",
+    circle: "size-[4.5rem] sm:size-24 lg:size-20 xl:size-28",
+    mark: "h-9 sm:h-12 lg:h-10 xl:h-14",
+    dollar: "text-2xl sm:text-3xl lg:text-2xl xl:text-4xl",
+    right: "w-[5.5rem] sm:w-32 lg:w-28 xl:w-36",
+    caption: "text-[12px] xl:text-[13px]",
+  },
+  step: {
+    node: "size-11 rounded-xl sm:size-12",
+    icon: "size-5",
+    gap: "gap-3",
+    circle: "size-[4.5rem] sm:size-20",
+    mark: "h-9 sm:h-10",
+    dollar: "text-2xl",
+    right: "w-[5.5rem] sm:w-28",
+    caption: "text-[12px]",
+  },
+};
+
+const SHADOW = "shadow-[0_1px_2px_rgba(11,20,16,0.06),0_8px_24px_-12px_rgba(11,20,16,0.2)]";
+const STAGGER = 0.55; // seconds between signal pulses
+const DURATION = 2.8;
+
+function SignalNode({
+  ref,
+  icon: Icon,
+  label,
+  highlighted,
+  size,
+}: {
+  ref: RefObject<HTMLDivElement | null>;
+  icon: LucideIcon;
+  label: string;
+  highlighted: boolean;
+  size: Size;
+}) {
+  const s = SIZES[size];
+  return (
+    <div
+      ref={ref}
+      role="img"
+      aria-label={label}
+      className={cn(
+        "group relative z-10 flex items-center justify-center border transition-colors duration-500 hover:z-20",
+        s.node,
+        highlighted ? "border-brand bg-brand" : "border-line bg-white",
+        SHADOW,
+      )}
+    >
+      <Icon aria-hidden="true" className={cn("text-ink", s.icon)} strokeWidth={1.75} />
+      {/* Hover tooltip (screen readers get the aria-label instead) */}
+      <span
+        aria-hidden="true"
+        className="invisible absolute left-full top-1/2 ml-2.5 -translate-y-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-[12px] font-medium leading-none text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:visible group-hover:opacity-100"
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
+
+/** Pulse beam: neutral path + bright green pulse. Static green path when done or not animated. */
+function Pulse({
+  containerRef,
+  fromRef,
+  toRef,
+  animated,
+  delay = 0,
+  width = 2.5,
+  green = false,
+  done = false,
+}: {
+  containerRef: RefObject<HTMLDivElement | null>;
+  fromRef: RefObject<HTMLElement | null>;
+  toRef: RefObject<HTMLElement | null>;
+  animated: boolean;
+  delay?: number;
+  width?: number;
+  /** Green base line (the money path, or the claim being worked). */
+  green?: boolean;
+  /** Completed: solid green, static. */
+  done?: boolean;
+}) {
+  const moving = animated && !done;
+  return (
+    <AnimatedBeam
+      containerRef={containerRef}
+      fromRef={fromRef}
+      toRef={toRef}
+      animated={moving}
+      pathColor={green || done ? colors.brand : colors.muted}
+      pathOpacity={done || (green && !moving) ? 1 : green ? 0.4 : 0.45}
+      pathWidth={width}
+      gradientStartColor={colors.brand}
+      gradientStopColor={colors.brand}
+      delay={delay}
+      duration={DURATION}
+    />
+  );
+}
+
+export function BeamDiagram({
+  step,
+  highlight = 0,
+  size = "step",
+  className,
+}: {
+  step?: Step;
+  /** Which signal is highlighted in step mode (index into beam.signals). */
+  highlight?: number;
+  size?: Size;
+  className?: string;
+}) {
+  const reduce = useReducedMotion() ?? false;
+  const animated = !reduce;
+  const hero = step === undefined;
+  const s = SIZES[size];
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const centerRef = useRef<HTMLDivElement>(null);
+  const moneyRef = useRef<HTMLDivElement>(null);
+  const signalRefs = useMemo(() => beam.signals.map(() => createRef<HTMLDivElement>()), []);
+
+  const label = hero ? beam.label : beam.stepLabels[step];
+  const moneyLit = hero || step === 2;
+
+  return (
+    <div
+      ref={containerRef}
+      role="group"
+      aria-label={label}
+      className={cn("relative flex w-full items-center justify-between", className)}
+    >
+      {/* Signals */}
+      <div className={cn("flex flex-col", s.gap)}>
+        {beam.signals.map((signal, i) => (
+          <SignalNode
+            key={signal}
+            ref={signalRefs[i]}
+            icon={ICONS[i]}
+            label={signal}
+            highlighted={!hero && i === highlight}
+            size={size}
+          />
+        ))}
+      </div>
+
+      {/* Blend (shared LogoMark) */}
+      <div
+        ref={centerRef}
+        role="img"
+        aria-label={beam.centerLabel}
+        className={cn(
+          "relative z-10 flex shrink-0 items-center justify-center rounded-full border border-line bg-white",
+          "shadow-[0_12px_36px_-12px_rgba(11,20,16,0.28)]",
+          s.circle,
+        )}
+      >
+        <LogoMark className={cn("w-auto", s.mark)} />
+      </div>
+
+      {/* Your brands: "$" is the same size as the center circle. The invisible
+          caption above keeps the circle vertically centered. */}
+      <div className={cn("flex shrink-0 flex-col items-center gap-2.5", s.right)}>
+        <p aria-hidden="true" className={cn("invisible text-center leading-tight", s.caption)}>
+          {beam.moneyCaption}
+        </p>
+        <div
+          ref={moneyRef}
+          aria-hidden="true"
+          className={cn(
+            "relative z-10 flex items-center justify-center rounded-full border font-mono font-medium text-ink transition-colors duration-500",
+            s.circle,
+            s.dollar,
+            moneyLit ? "border-brand bg-brand" : "border-line bg-white",
+            SHADOW,
+          )}
+        >
+          $
+        </div>
+        <p className={cn("text-center leading-tight text-body", s.caption)}>{beam.moneyCaption}</p>
+      </div>
+
+      {/* Beams */}
+      {hero ? (
+        <>
+          {signalRefs.map((r, i) => (
+            <Pulse key={i} containerRef={containerRef} fromRef={r} toRef={centerRef} animated={animated} delay={i * STAGGER} />
+          ))}
+          <Pulse containerRef={containerRef} fromRef={centerRef} toRef={moneyRef} animated={animated} delay={0.9} width={3.5} green />
+        </>
+      ) : (
+        <>
+          {/* Quiet neutral paths from every signal, for context */}
+          {signalRefs.map((r, i) =>
+            i === highlight && step >= 1 ? null : (
+              <AnimatedBeam
+                key={i}
+                containerRef={containerRef}
+                fromRef={r}
+                toRef={centerRef}
+                animated={false}
+                pathColor={colors.muted}
+                pathOpacity={0.3}
+              />
+            ),
+          )}
+          {step >= 1 && (
+            <Pulse
+              key={`claim-${step}`}
+              containerRef={containerRef}
+              fromRef={signalRefs[highlight]}
+              toRef={centerRef}
+              animated={animated}
+              green
+              done={step === 2}
+            />
+          )}
+          {step === 2 && (
+            <Pulse containerRef={containerRef} fromRef={centerRef} toRef={moneyRef} animated={animated} width={3.5} green />
+          )}
+        </>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,183 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* dark: utilities only apply under a .dark class (never set), so pasted
+   21st.dev components don't flip to dark mode with the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Blend design tokens. Tailwind v4 is configured in CSS: every --color-* here
+ * becomes a utility (bg-brand, text-ink, border-line, ...).
+ *
+ * Two-tone green: bright `brand` is a FILL only, always with ink on top.
+ * Green text on light backgrounds uses `brand-text`.
+ *
+ * WCAG contrast: ink on brand 8.96 · ink on brand-hover 7.09 ·
+ * brand-text on white 5.36 / surface 5.03 / brand-tint 4.95 ·
+ * paper on brand-deep 12.57 · mint on brand-deep 8.33 · body on white 7.76 ·
+ * muted-foreground on white 4.98 / surface 4.67.
+ * Never: white text on brand (2.09), brand as text or focus ring on white (2.09).
+ */
+@theme {
+  /* Brand */
+  --color-brand: #3dcb7f; /* fills: buttons, badges, progress, chart bars, highlights */
+  --color-brand-hover: #2fb56d; /* hover / pressed fill */
+  --color-brand-text: #147a4b; /* green text and focus rings on light backgrounds */
+  --color-brand-tint: #ecf9f2; /* soft backgrounds, Found badge */
+  --color-brand-deep: #0c3b27; /* the dark Belief section */
+  --color-mint: #8ee4b6; /* accents and chart bars on dark backgrounds */
+
+  /* Neutrals */
+  --color-ink: #0b1410; /* headlines, primary text, text on brand fills */
+  --color-body: #4a5550; /* paragraph text */
+  --color-line: #e5e9e6; /* borders, dividers */
+  --color-surface: #f6f8f6; /* cards, alt sections */
+  --color-paper: #ffffff; /* page background */
+  /* muted: exposed as text-muted-foreground (shadcn name), see :root. */
+
+  /* Status */
+  --color-expiring: #b45309;
+  --color-expiring-tint: #fef3e2;
+
+  --tracking-headline: -0.04em;
+  --tracking-wordmark: -0.045em;
+}
+
+/*
+ * shadcn / 21st.dev semantic tokens, mapped to Blend.
+ * Pasted components use these names (bg-background, bg-primary,
+ * text-muted-foreground, border-border, ring, ...) and pick up the brand.
+ */
+:root {
+  --radius: 0.875rem;
+  --background: #ffffff;
+  --foreground: #0b1410;
+  --card: #ffffff;
+  --card-foreground: #0b1410;
+  --popover: #ffffff;
+  --popover-foreground: #0b1410;
+  --primary: #3dcb7f;
+  --primary-foreground: #0b1410;
+  --secondary: #f6f8f6;
+  --secondary-foreground: #0b1410;
+  --muted: #f6f8f6;
+  /* muted, darkened from #7C8781 (3.72:1, failed AA for small text) to pass. */
+  --muted-foreground: #68726d;
+  --accent: #ecf9f2;
+  --accent-foreground: #0b1410;
+  --destructive: #b42318;
+  --border: #e5e9e6;
+  --input: #e5e9e6;
+  --ring: #147a4b;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  html {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-brand);
+    color: var(--color-ink);
+  }
+}
+
+/*
+ * Grain: low-opacity SVG noise for the brand-deep section.
+ * Content inside must sit above it (relative z-[2]).
+ */
+@layer components {
+  .grain {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 220px 220px;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+  }
+
+  /*
+   * Marker: a hand-drawn highlighter swipe behind the lower ~60% of text.
+   * Works across line wraps (each line gets its own swipe).
+   */
+  .marker {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath fill='%233DCB7F' d='M7 24C58 13 141 19 214 15C282 11 349 9 393 17C398 39 396 66 391 85C322 93 241 87 163 91C104 94 47 91 9 89C4 68 3 45 7 24Z'/%3E%3Cpath fill='%232FB56D' fill-opacity='0.45' d='M18 80C140 85 268 81 388 75L389 83C270 90 140 93 17 87Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 0 92%;
+    background-size: 100% 60%;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding-inline: 0.08em;
+    margin-inline: -0.08em;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .marker {
+      animation: marker-draw 0.9s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+  }
+}
+
+@keyframes marker-draw {
+  from {
+    background-size: 0% 60%;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
