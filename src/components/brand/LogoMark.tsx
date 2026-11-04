@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 /**
  * THE Blend mark: two overlapping rounded tiles. Single source for the nav and
  * footer (via Logo) and both beam diagrams' center node. Brand source files
- * (favicons, PNG exports) live in /brand.
+ * (favicons, PNG exports) live in brand/ at the repo root.
  *
  * Full color by default. `mono` draws both tiles in currentColor (second tile at
  * 50% opacity, no overlap shape) for one-color spots; set the color with text-* classes.

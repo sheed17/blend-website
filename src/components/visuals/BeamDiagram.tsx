@@ -32,7 +32,7 @@ const SIZES: Record<Size, Record<string, string>> = {
     icon: "size-5 sm:size-6 lg:size-5 xl:size-7",
     gap: "gap-3 sm:gap-4 lg:gap-3.5 xl:gap-5",
     circle: "size-[4.5rem] sm:size-24 lg:size-20 xl:size-28",
-    mark: "h-9 sm:h-12 lg:h-10 xl:h-14",
+    mark: "h-12 sm:h-16 lg:h-13 xl:h-18",
     dollar: "text-2xl sm:text-3xl lg:text-2xl xl:text-4xl",
     right: "w-[5.5rem] sm:w-32 lg:w-28 xl:w-36",
     caption: "text-[12px] xl:text-[13px]",
@@ -42,7 +42,7 @@ const SIZES: Record<Size, Record<string, string>> = {
     icon: "size-5",
     gap: "gap-3",
     circle: "size-[4.5rem] sm:size-20",
-    mark: "h-9 sm:h-10",
+    mark: "h-12 sm:h-13",
     dollar: "text-2xl",
     right: "w-[5.5rem] sm:w-28",
     caption: "text-[12px]",
@@ -192,11 +192,15 @@ export function BeamDiagram({
       </div>
 
       {/* Your brands: "$" is the same size as the center circle. The invisible
-          caption above keeps the circle vertically centered. */}
+          caption above keeps the circle vertically centered. Copies of the caption that
+          shouldn't add page text (this spacer, and the How-it-works diagrams, since the
+          hero already says it) are drawn from data-caption with CSS generated content. */}
       <div className={cn("flex shrink-0 flex-col items-center gap-2.5", s.right)}>
-        <p aria-hidden="true" className={cn("invisible text-center leading-tight", s.caption)}>
-          {beam.moneyCaption}
-        </p>
+        <p
+          aria-hidden="true"
+          data-caption={beam.moneyCaption}
+          className={cn("invisible text-center leading-tight before:content-[attr(data-caption)]", s.caption)}
+        />
         <div
           ref={moneyRef}
           aria-hidden="true"
@@ -210,7 +214,15 @@ export function BeamDiagram({
         >
           $
         </div>
-        <p className={cn("text-center leading-tight text-body", s.caption)}>{beam.moneyCaption}</p>
+        {hero ? (
+          <p className={cn("text-center leading-tight text-body", s.caption)}>{beam.moneyCaption}</p>
+        ) : (
+          <p
+            aria-hidden="true"
+            data-caption={beam.moneyCaption}
+            className={cn("text-center leading-tight text-body before:content-[attr(data-caption)]", s.caption)}
+          />
+        )}
       </div>
 
       {/* Beams */}

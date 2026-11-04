@@ -5,20 +5,33 @@
 
 export const site = {
   name: "Blend",
-  email: "hello@blend.example",
+  // The contact address lives in src/lib/site.ts (CONTACT_EMAIL).
   title: "Blend — We recover what commerce leaves behind.",
   description:
     "Money slips out of every supply chain. Blend finds it, and puts it back.",
+  /** Link previews (Open Graph / Twitter) for the home page. */
+  preview: {
+    title: "Blend",
+    description: "Blend recovers the money commerce leaves behind. Carrier claims for 3PLs.",
+  },
   contactLabel: "Get in touch",
+} as const;
+
+/** Page links in the nav (all pages). The footer adds its own (see `footer.links`). */
+export const nav = {
+  links: [{ label: "How it works", href: "/how-it-works" }],
 } as const;
 
 export const hero = {
   headlineLead: "We recover what commerce",
   headlineAccent: "leaves behind.",
-  // "We\u00a0claim\u00a0it." uses non-breaking spaces so the closing line never strands one word.
+  // "We\u00a0claim\u00a0it\u00a0for\u00a0you." uses non-breaking spaces so the closing line never strands one word.
   subline:
-    "Carriers owe your brands money on every lost and damaged package. Almost none of it gets claimed. We\u00a0claim\u00a0it.",
+    "Carriers owe the brands you ship for money on every lost and damaged package. Almost none of it gets claimed. We\u00a0claim\u00a0it\u00a0for\u00a0you.",
   secondaryCta: "See how it works",
+  /** Small muted lines under the hero buttons, in this order. */
+  pricing: "First month free. After that, 25% of what we recover. Nothing if nothing is.",
+  audience: "Built for 3PLs and the brands they ship for.",
 } as const;
 
 /** Hero + How it works diagram: signals → Blend → your brands. Icons only, no carrier names. */
@@ -46,16 +59,26 @@ export const belief = {
 export const facts = {
   headline: "The money is already there.",
   footnote: "Industry figures. Not Blend results.",
+  // Checked against each source page on 2026-11-03. Only figures that match their source
+  // exactly are kept; re-check the link before adding or changing one.
   items: [
-    { prefix: "", value: 40, suffix: "%+", line: "of eligible shipping refunds never get filed.", source: "EasyPost" },
-    { prefix: "", value: 75, suffix: "%", line: "of parcel audit credits go unclaimed.", source: "ShipScience" },
-    { prefix: "$", value: 3, suffix: "B+", line: "in carrier credits goes unclaimed every year.", source: "Intelligent Audit" },
     {
       prefix: "",
-      value: 60,
-      suffix: " days",
-      line: "is how long most damage claims stay open. Then the money is gone.",
-      source: "UPS and FedEx claim terms",
+      value: 75,
+      suffix: "%",
+      line: "of parcel audit credits go unclaimed.",
+      source: "ShipScience",
+      // "75% of parcel audit credits owed by UPS and FedEx go unclaimed every year." (Mar 16, 2026)
+      url: "https://www.shipscience.com/your-claims-process-isn-t-working-you-just-don-t-know-it-yet/",
+    },
+    {
+      prefix: "$",
+      value: 3,
+      suffix: "B+",
+      line: "in carrier credits goes unclaimed every year.",
+      source: "Intelligent Audit",
+      // Headline: "The $3B+ Blind Spot…"; body: "Every year, an estimated $3 billion in shipping refunds go unclaimed" (Jun 17, 2025)
+      url: "https://www.intelligentaudit.com/blog/miss-out-on-parcel-refunds",
     },
   ],
 } as const;
@@ -66,7 +89,7 @@ export const howItWorks = {
     {
       number: "01",
       title: "Find",
-      body: "We surface every lost and damaged shipment across your brands, on UPS, FedEx, USPS, and regional carriers.",
+      body: "We surface every lost and damaged shipment across every brand in your warehouse, on UPS, FedEx, USPS, and regional carriers.",
       before: "Damage reports scattered across inboxes, portals, and spreadsheets.",
     },
     {
@@ -99,11 +122,22 @@ export const outcomes = {
 } as const;
 
 export const vision = {
-  statement: "Today, carrier claims for logistics.",
+  statement: "Today, carrier claims for 3PLs.",
   followup: "Next, the rest of it.",
   note: "Lost and damaged shipments across every carrier you use, then retail deductions, then the rest of the back office.",
 } as const;
 
+/** Landing page, above the footer. Placeholders until the real names and links are in. */
+export const team = {
+  headline: "Who we are",
+  people: [
+    { name: "[NAME 1]", line: "[ONE LINE]", linkedin: "[LINKEDIN URL]" },
+    { name: "[NAME 2]", line: "[ONE LINE]", linkedin: "[LINKEDIN URL]" },
+  ],
+  linkLabel: "LinkedIn",
+} as const;
+
 export const footer = {
   tagline: "Nothing left on the table.",
+  links: [...nav.links, { label: "Privacy", href: "/privacy" }],
 } as const;
