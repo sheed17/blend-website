@@ -6,7 +6,8 @@ import { Container } from "@/components/primitives/Container";
 import { banner } from "@/content/site";
 
 /**
- * Recurring full-bleed band on the light surface, with faint drifting green light.
+ * Recurring full-bleed band on the light surface, with faint drifting green light
+ * (held still below md).
  * Reusable on future pages. Pass `visual` to replace the drifting light.
  */
 export function Banner({
@@ -29,11 +30,11 @@ export function Banner({
         {visual ?? (
           <>
             <motion.div
-              className="absolute -left-[10%] -top-1/2 aspect-square w-[70vw] rounded-full bg-[radial-gradient(closest-side,rgba(61,203,127,0.16),rgba(61,203,127,0)_100%)]"
+              className="max-md:transform-none! absolute -left-[10%] -top-1/2 aspect-square w-[70vw] rounded-full bg-[radial-gradient(closest-side,rgba(61,203,127,0.16),rgba(61,203,127,0)_100%)]"
               {...drift(["0%", "18%", "0%"], ["0%", "12%", "0%"], 18)}
             />
             <motion.div
-              className="absolute -bottom-2/3 -right-[10%] aspect-square w-[80vw] rounded-full bg-[radial-gradient(closest-side,rgba(142,228,182,0.28),rgba(142,228,182,0)_100%)]"
+              className="max-md:transform-none! absolute -bottom-2/3 -right-[10%] aspect-square w-[80vw] rounded-full bg-[radial-gradient(closest-side,rgba(142,228,182,0.28),rgba(142,228,182,0)_100%)]"
               {...drift(["0%", "-15%", "0%"], ["0%", "-10%", "0%"], 22)}
             />
           </>

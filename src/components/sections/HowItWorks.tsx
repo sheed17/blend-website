@@ -4,7 +4,7 @@ import { useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Container } from "@/components/primitives/Container";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
-import { BeamDiagram } from "@/components/visuals/BeamDiagram";
+import { BeamDiagram, StepVisual } from "@/components/visuals/BeamDiagram";
 import { howItWorks } from "@/content/site";
 import { cn } from "@/lib/utils";
 
@@ -48,10 +48,11 @@ function StepBlock({
         </p>
       </div>
 
-      {/* Mobile / tablet: visual inline under each step */}
+      {/* Mobile / tablet: a small static visual of just this step's part of the flow
+          (the full animated diagram is desktop only). */}
       <div className="mt-10 rounded-3xl bg-surface p-3 sm:p-8 lg:hidden">
         <div className="overflow-hidden rounded-2xl border border-line bg-white">
-          <BeamDiagram step={index as 0 | 1 | 2} className="min-h-[300px] px-5 py-8 sm:px-10" />
+          <StepVisual step={index as 0 | 1 | 2} className="min-h-[168px] px-5 py-10" />
         </div>
       </div>
     </li>

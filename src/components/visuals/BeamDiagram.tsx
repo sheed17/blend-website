@@ -268,3 +268,70 @@ export function BeamDiagram({
     </div>
   );
 }
+
+/* ------------------------------------------------------------------------------------------
+ * Mobile / tablet step visuals (How it works, below lg). Instead of repeating the full
+ * diagram three times, each step shows only its part of the flow, static:
+ *   0 Find   → the five signals, the claim's signal highlighted
+ *   1 File   → that signal → Blend
+ *   2 Return → Blend → "$"
+ * ---------------------------------------------------------------------------------------- */
+
+const STEP_NODE = "flex size-11 shrink-0 items-center justify-center rounded-xl border";
+const STEP_CIRCLE = "flex size-[4.5rem] shrink-0 items-center justify-center rounded-full border";
+const STEP_LINE = "h-[3px] w-12 shrink-0 rounded-full bg-brand sm:w-20";
+
+function StaticSignal({ index, highlighted }: { index: number; highlighted: boolean }) {
+  const Icon = ICONS[index];
+  return (
+    <div className={cn(STEP_NODE, highlighted ? "border-brand bg-brand" : "border-line bg-white", SHADOW)}>
+      <Icon aria-hidden="true" className="size-5 text-ink" strokeWidth={1.75} />
+    </div>
+  );
+}
+
+function StaticBlend() {
+  return (
+    <div className={cn(STEP_CIRCLE, "border-line bg-white shadow-[0_12px_36px_-12px_rgba(11,20,16,0.28)]")}>
+      <LogoMark className="h-12 w-auto" />
+    </div>
+  );
+}
+
+export function StepVisual({ step, highlight = 0, className }: { step: Step; highlight?: number; className?: string }) {
+  return (
+    <div role="img" aria-label={beam.stepLabels[step]} className={cn("flex items-center justify-center", className)}>
+      {step === 0 && (
+        <div className="flex gap-2.5">
+          {beam.signals.map((signal, i) => (
+            <StaticSignal key={signal} index={i} highlighted={i === highlight} />
+          ))}
+        </div>
+      )}
+
+      {step === 1 && (
+        <div className="flex items-center gap-3">
+          <StaticSignal index={highlight} highlighted />
+          <span className={STEP_LINE} />
+          <StaticBlend />
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="flex items-center gap-3">
+          <StaticBlend />
+          <span className={STEP_LINE} />
+          <div
+            className={cn(
+              STEP_CIRCLE,
+              "border-brand bg-brand font-mono text-2xl font-medium text-ink",
+              SHADOW,
+            )}
+          >
+            $
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
