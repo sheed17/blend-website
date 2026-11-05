@@ -55,9 +55,14 @@
   /* Status */
   --color-expiring: var(--expiring);
   --color-expiring-tint: var(--expiring-tint);
-  --color-note: var(--note);
-  --color-tag: var(--tag);
-  --color-tag-tint: var(--tag-tint);
+  --color-status-red: var(--status-red);
+  --color-status-red-tint: var(--status-red-tint);
+  --color-status-amber: var(--status-amber);
+  --color-status-amber-tint: var(--status-amber-tint);
+  --color-stamp: var(--stamp);
+  --color-diy-card: var(--diy-card);
+  --color-diy-row-line: var(--diy-row-line);
+  --color-diy-tag: var(--diy-tag);
 
   /*
    * shadcn / 21st.dev semantic names, mapped to the theme. Pasted components use
@@ -102,6 +107,45 @@
     to {
       background-position: 0% 0%;
     }
+  }
+}
+
+/*
+ * Premium layered card outline ("bezel"): a faint outer frame (4px padding, radius +4px)
+ * around a card with a top-to-bottom gradient border, a white top-edge highlight and a
+ * soft drop shadow. Set --bezel-r (card radius) and --bezel-bg (card fill) on the frame;
+ * .bezel-deep is the variant for deep green cards. In the components layer so utilities
+ * can still override.
+ */
+@layer components {
+  .bezel {
+    padding: 4px;
+    border-radius: calc(var(--bezel-r) + 4px);
+    background: rgb(11 20 16 / 0.03);
+    border: 1px solid rgb(11 20 16 / 0.06);
+  }
+  .bezel-card {
+    border: 1px solid transparent;
+    border-radius: var(--bezel-r);
+    background:
+      linear-gradient(var(--bezel-bg), var(--bezel-bg)) padding-box,
+      var(--bezel-border) border-box;
+    box-shadow:
+      inset 0 1px 0 var(--bezel-highlight),
+      0 1px 2px rgb(11 20 16 / 0.04),
+      0 8px 24px -8px rgb(11 20 16 / 0.12);
+  }
+  .bezel,
+  .bezel-card {
+    --bezel-border: linear-gradient(to bottom, rgb(11 20 16 / 0.14), rgb(11 20 16 / 0.05));
+    --bezel-highlight: rgb(255 255 255 / 0.9);
+  }
+  .bezel-deep {
+    background: rgb(15 61 42 / 0.12);
+  }
+  .bezel-deep,
+  .bezel-deep .bezel-card {
+    --bezel-highlight: rgb(255 255 255 / 0.12);
   }
 }
 

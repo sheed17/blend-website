@@ -16,12 +16,6 @@ import { CONTACT_HREF } from "@/lib/site";
 export function Hero() {
   return (
     <section data-surface="hero" className="relative overflow-hidden bg-hero pb-24 pt-10 md:pb-32 md:pt-24 lg:min-h-[calc(100svh-72px)] lg:pt-28">
-      {/* Faint dot grid, fading out toward the edges */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-(image:--hero-dots) bg-size-[24px_24px] bg-center [mask-image:radial-gradient(ellipse_75%_70%_at_50%_45%,#000_35%,transparent_100%)]"
-      />
-
       <Container className="relative grid items-center gap-y-6 sm:gap-y-10 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-0">
         <div className="min-w-0 lg:col-span-7 lg:self-end">
           <Reveal>

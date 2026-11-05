@@ -18,8 +18,16 @@ export const site = {
 } as const;
 
 /** Page links in the nav (all pages). The footer adds its own (see `footer.links`). */
+/**
+ * Tubelight nav pill. `target` links scroll on the home page (and land there from other
+ * pages): "faq" scrolls to Questions, "pricing" also opens the cost question.
+ */
 export const nav = {
-  links: [{ label: "How it works", href: "/how-it-works" }],
+  links: [
+    { id: "how", label: "How it works", href: "/how-it-works" },
+    { id: "pricing", label: "Pricing", href: "/#pricing", target: "pricing" },
+    { id: "faq", label: "FAQ", href: "/#faq", target: "faq" },
+  ],
 } as const;
 
 export const hero = {
@@ -32,14 +40,14 @@ export const hero = {
   /** Small muted lines under the hero buttons, in this order. */
   pricing: "First month free. After that, 25% of what we recover. Nothing if nothing is.",
   audience: "Built for 3PLs and the brands they ship for.",
-  /** Hero card stack: each problem drops in, then flips to `claimedLabel` (detail line stays). */
-  claimedLabel: "Claimed ✓",
+  /** Hero label stack: each problem lands as a shipping label, then gets `stamp`ed. */
+  stamp: "Claimed",
   claims: [
-    { title: "Damaged in transit", detail: "Candle order · arrived broken" },
-    { title: "Lost package", detail: "No scan for 12 days" },
-    { title: "Missing item", detail: "1 of 3 in the box" },
-    { title: "Crushed box", detail: "Supplement order · leaking" },
-    { title: "Never delivered", detail: "Marked delivered, never arrived" },
+    { status: "Damaged", damaged: true, title: "Damaged in transit", detail: "Candle order · arrived broken" },
+    { status: "Lost", damaged: false, title: "Lost package", detail: "No scan for 12 days" },
+    { status: "Missing", damaged: false, title: "Missing item", detail: "1 of 3 in the box" },
+    { status: "Damaged", damaged: true, title: "Crushed box", detail: "Supplement order · leaking" },
+    { status: "Not delivered", damaged: false, title: "Never delivered", detail: "Marked delivered, never arrived" },
   ],
 } as const;
 
@@ -196,7 +204,8 @@ export const faq = {
       a: "No. You add us as our own user on your carrier accounts. Where the carrier allows it, that user can only file claims, and you can remove it any time.",
     },
     { q: "Which carriers do you handle?", a: "Every carrier you ship with: UPS, FedEx, USPS, and regionals." },
-    { q: "What does it cost?", a: "First month free. After that, 25% of what we recover. Nothing if nothing is." },
+    /** `pricing`: the nav's "Pricing" link opens this one. */
+    { q: "What does it cost?", pricing: true, a: "First month free. After that, 25% of what we recover. Nothing if nothing is." },
     { q: "How do our brands get the money?", a: "Carriers pay you directly. You credit each brand on your monthly statement." },
     {
       q: "What if a claim is denied?",

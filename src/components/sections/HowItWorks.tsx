@@ -1,11 +1,13 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { AnimatePresence, motion, useInView } from "motion/react";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { AnimatedList } from "@/components/ui/animated-list";
+import { BorderBeam } from "@/components/ui/border-beam";
 import { howItWorks } from "@/content/site";
 import { cn } from "@/lib/utils";
 
@@ -14,131 +16,200 @@ type Task = Step["diy"][number];
 
 /** ms between tasks dropping in. */
 const DROP = 700;
-/** ms for the last task's spring to settle, then the pause before the pile collapses. */
+/** ms for the last task's spring to settle, then the pause before crossing off. */
 const LAND = 400;
-const HOLD = 600;
-/** ms for the pile to slide together before it shrinks away. */
-const SLIDE = 600;
+const HOLD = 500;
+/** Crossing off: ms between rows, and how long each strike takes to draw. */
+const STAGGER = 120;
+const STRIKE = 350;
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** Stable pseudo-random in [0, 1), so each note keeps its tilt across renders. */
+const ROW = "flex items-center justify-between gap-3 rounded-lg border border-diy-row-line bg-white px-4 py-3 text-[15px] leading-snug text-ink";
+/** "Blend does this.": deep green card in a deep bezel (outer frame + inner card classes). */
+const DONE_FRAME = "bezel bezel-deep [--bezel-bg:var(--deep)] [--bezel-r:0.5rem]";
+const DONE =
+  "bezel-card relative flex w-full items-center gap-2.5 px-4 py-4 text-[17px] font-bold leading-snug text-on-deep";
+
+/** Stable pseudo-random in [0, 1), so each row keeps its tilt across renders. */
 function rand(seed: number) {
   const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
   return x - Math.floor(x);
 }
 
-/** One sticky note: tilted and nudged sideways while piled, squared up when the pile slides together. */
-function TaskRow({ task, seed, together }: { task: Task; seed: number; together: boolean }) {
-  const tilt = rand(seed) * 4 - 2; // -2° to 2°
-  const shift = rand(seed + 101) * 16 - 8; // -8px to 8px
+/** Strike drawn through inline text as a growing background, so it follows wrapped lines left to right. */
+const STRIKE_BG =
+  "bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat bg-position-[0_60%] [box-decoration-break:slice]";
+
+function RowBody({ task, crossed, delay = 0 }: { task: Task; crossed?: boolean; delay?: number }) {
+  const strike = (d: number) => ({
+    initial: false as const,
+    animate: { backgroundSize: crossed ? "100% 1.5px" : "0% 1.5px" },
+    transition: { duration: STRIKE / 1000, ease: EASE, delay: d },
+  });
+
+  return (
+    <>
+      <span className="min-w-0">
+        <motion.span {...strike(delay)} className={STRIKE_BG} style={{ backgroundSize: "0% 1.5px" }}>
+          {task.task}
+        </motion.span>
+      </span>
+      <motion.span
+        {...strike(delay + (STRIKE * 0.6) / 1000)}
+        className={cn(STRIKE_BG, "shrink-0 text-[13px] text-diy-tag")}
+        style={{ backgroundSize: "0% 1.5px" }}
+      >
+        {task.when}
+      </motion.span>
+    </>
+  );
+}
+
+function DoneBody() {
+  return (
+    <>
+      <Check aria-hidden="true" strokeWidth={3} className="size-5 shrink-0 text-mint" />
+      {howItWorks.diyDone}
+    </>
+  );
+}
+
+/**
+ * One task: lands slightly tilted and nudged sideways. When crossed off, a strike is
+ * drawn through the text and then the tag, left to right, while the row straightens and
+ * fades to 35%.
+ */
+function TaskRow({ task, seed, crossed, delay }: { task: Task; seed: number; crossed: boolean; delay: number }) {
+  const tilt = rand(seed) * 3 - 1.5; // -1.5° to 1.5°
+  const shift = rand(seed + 101) * 12 - 6; // -6px to 6px
+  const t = { duration: STRIKE / 1000, ease: EASE, delay };
 
   return (
     <motion.div
       initial={false}
-      animate={{ rotate: together ? 0 : tilt, x: together ? 0 : shift }}
-      transition={{ duration: SLIDE / 1000, ease: EASE }}
-      className="flex items-center justify-between gap-3 rounded-lg bg-note px-4 py-3 text-sm leading-snug text-ink shadow-[0_6px_14px_-6px_rgb(0_0_0/0.45),0_1px_2px_rgb(0_0_0/0.2)] sm:text-[15px]"
+      animate={crossed ? { rotate: 0, x: 0, opacity: 0.35 } : { rotate: tilt, x: shift, opacity: 1 }}
+      transition={t}
+      className={cn(ROW, "shadow-[0_1px_2px_rgb(11_20_16/0.05),0_4px_10px_-6px_rgb(11_20_16/0.12)]")}
     >
-      <span className="min-w-0">{task.task}</span>
-      <span className="shrink-0 rounded-full bg-tag-tint px-2 py-0.5 font-mono text-[11px] font-medium text-tag">
-        {task.when}
-      </span>
+      <RowBody task={task} crossed={crossed} delay={delay} />
     </motion.div>
   );
 }
 
 /**
  * "Doing it yourself": once the card is in view, the manual work behind a step drops in
- * one note at a time (Magic UI Animated List, newest on top) into a messy pile, with a
- * counter in the header. ~600ms after the last one lands the pile slides together,
- * shrinks and fades, and one solid "✓ Blend does this." row takes its place and stays.
- * Runs once, no loop.
+ * one row at a time (Magic UI Animated List, newest on top), with a counter in the
+ * header. ~500ms after the last one lands, each row is crossed off top to bottom, then
+ * "Blend does this." drops in on top. The crossed-off rows stay, faded. Runs once.
  *
- * The pile area is a fixed height so nothing below moves. Desktop fits every note;
- * phones show about five, with older ones fading out at the bottom. The animation is
- * hidden from screen readers, which get the task list as plain text instead.
+ * An invisible copy of the final layout sits in the same grid cell as the animation, so
+ * the card is exactly as tall as its finished content from the start and nothing below
+ * moves. The animation is hidden from screen readers, which get the list as text.
  */
 function DiyFeed({ tasks, seed }: { tasks: readonly Task[]; seed: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const on = useInView(ref, { once: true, amount: 0.5 });
   const [landed, setLanded] = useState(0);
-  const [phase, setPhase] = useState<"pile" | "together" | "done">("pile");
+  const [phase, setPhase] = useState<"drop" | "cross" | "done">("drop");
 
   useEffect(() => {
     if (landed < tasks.length) return;
-    const together = setTimeout(() => setPhase("together"), LAND + HOLD);
-    const done = setTimeout(() => setPhase("done"), LAND + HOLD + SLIDE);
+    const cross = setTimeout(() => setPhase("cross"), LAND + HOLD);
+    const done = setTimeout(
+      () => setPhase("done"),
+      LAND + HOLD + (tasks.length - 1) * STAGGER + STRIKE + 150,
+    );
     return () => {
-      clearTimeout(together);
+      clearTimeout(cross);
       clearTimeout(done);
     };
   }, [landed, tasks.length]);
 
   return (
-    <div
-      ref={ref}
-      className="rounded-2xl bg-deep p-6 shadow-[0_24px_60px_-36px_color-mix(in_srgb,var(--ink)_60%,transparent)] sm:p-8"
-    >
-      <div className="flex items-baseline justify-between gap-4">
-        <p className="text-sm font-medium text-mint">{howItWorks.diyLabel}</p>
-        <p aria-hidden="true" className="font-mono text-xs tabular-nums text-mint/70">
-          {landed} {landed === 1 ? "task" : "tasks"}
-        </p>
-      </div>
+    <div className="bezel [--bezel-bg:var(--diy-card)] [--bezel-r:1rem]">
+      <div ref={ref} className="bezel-card p-5 sm:p-7">
+        <div className="flex items-baseline justify-between gap-4 text-sm font-semibold text-ink/60">
+          <p>{howItWorks.diyLabel}</p>
+          <p aria-hidden="true" className="tabular-nums">
+            {landed} {landed === 1 ? "task" : "tasks"}
+          </p>
+        </div>
 
-      <ul className="sr-only">
-        {tasks.map((t) => (
-          <li key={t.task}>
-            {t.task} ({t.when})
-          </li>
-        ))}
-        <li>{howItWorks.diyDone}</li>
-      </ul>
+        <ul className="sr-only">
+          {tasks.map((t) => (
+            <li key={t.task}>
+              {t.task} ({t.when})
+            </li>
+          ))}
+          <li>{howItWorks.diyDone}</li>
+        </ul>
 
-      {/* sm+: tall enough for every note (~2.8rem each, 0.625rem gaps, plus room for the tilt). */}
-      <div
-        aria-hidden="true"
-        style={{ "--rows": tasks.length } as CSSProperties}
-        className={cn(
-          "-mx-3 mt-5 flex h-[21rem] flex-col overflow-hidden px-3 py-2 sm:h-[calc(var(--rows)*2.8rem+(var(--rows)-1)*0.625rem+1rem)]",
-          phase === "pile" && "[mask-image:linear-gradient(to_bottom,#000_75%,transparent)] sm:[mask-image:none]",
-        )}
-      >
-        <AnimatePresence mode="wait">
-          {phase !== "done" ? (
-            <motion.div
-              key="pile"
-              layout="position"
-              transition={{ duration: SLIDE / 1000, ease: EASE }}
-              exit={{ scale: 0.85, opacity: 0, transition: { duration: 0.35, ease: EASE } }}
-              className={cn("w-full", phase === "together" && "my-auto")}
-            >
-              {on && (
-                <AnimatedList
-                  delay={DROP}
-                  onItem={setLanded}
-                  className={phase === "together" ? "grid [&>*]:col-start-1 [&>*]:row-start-1" : "gap-2.5"}
+        <div aria-hidden="true" className="mt-4 grid">
+          {/* Sizer: the finished layout, invisible. */}
+          <div className="invisible col-start-1 row-start-1 flex flex-col gap-2.5">
+            <div className={DONE_FRAME}>
+              <div className={DONE}>
+                <DoneBody />
+              </div>
+            </div>
+            {tasks.map((t) => (
+              <div key={t.task} className={ROW}>
+                <RowBody task={t} />
+              </div>
+            ))}
+          </div>
+
+          <div className="col-start-1 row-start-1 flex flex-col gap-2.5 self-start">
+            <AnimatePresence>
+              {phase === "done" && (
+                <motion.div
+                  key="blend"
+                  initial={{ opacity: 0, y: -16, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 340, damping: 28 }}
+                  className={DONE_FRAME}
                 >
+                  <div className={DONE}>
+                    <DoneBody />
+                    {/* One lap of the beam once it lands, then it fades away. */}
+                    <motion.div
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: 0 }}
+                      transition={{ delay: 2.85, duration: 0.3 }}
+                      className="pointer-events-none absolute -inset-px rounded-[inherit]"
+                    >
+                      <BorderBeam
+                        size={80}
+                        duration={3}
+                        borderWidth={1.5}
+                        colorFrom="var(--mint)"
+                        colorTo="var(--brand)"
+                        transition={{ repeat: 0 }}
+                      />
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {on && (
+              <motion.div layout="position" transition={{ type: "spring", stiffness: 340, damping: 32 }}>
+                <AnimatedList delay={DROP} onItem={setLanded} className="gap-2.5">
                   {tasks.map((t, i) => (
-                    <TaskRow key={t.task} task={t} seed={seed + i} together={phase === "together"} />
+                    <TaskRow
+                      key={t.task}
+                      task={t}
+                      seed={seed + i}
+                      crossed={phase !== "drop"}
+                      // Top to bottom: the newest task is on top.
+                      delay={((tasks.length - 1 - i) * STAGGER) / 1000}
+                    />
                   ))}
                 </AnimatedList>
-              )}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="blend"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 320, damping: 26 }}
-              className="my-auto flex w-full items-center gap-2.5 rounded-xl bg-brand px-5 py-4 text-lg font-bold text-ink shadow-[0_14px_30px_-14px_rgb(0_0_0/0.5)]"
-            >
-              <span>✓</span>
-              {howItWorks.diyDone}
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

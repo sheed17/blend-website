@@ -60,18 +60,22 @@
   --expiring: #b45309;
   --expiring-tint: #fef3e2;
   --destructive: #b42318;
-  /* How it works task pile: off-white sticky notes with amber time tags */
-  --note: #fafaf7;
-  --tag: #e8b44c;
-  --tag-tint: color-mix(in srgb, #e8b44c 16%, transparent);
+  /* Hero shipping labels: status tags and the CLAIMED stamp */
+  --status-red: #d1495b;
+  --status-red-tint: color-mix(in srgb, #d1495b 10%, transparent);
+  --status-amber: #b7791f;
+  --status-amber-tint: color-mix(in srgb, #b7791f 11%, transparent);
+  --stamp: #2fb06c;
+  /* How it works "Doing it yourself" cards */
+  --diy-card: #eef3ef;
+  --diy-row-line: #e2e8e4;
+  --diy-tag: #6b756f;
 
   /* Roles */
   --focus: var(--accent-strong);
   --accent-line: var(--accent); /* beams, arcs, progress marks on light backgrounds */
   /* Radial light behind sections */
   --glow-hero: radial-gradient(closest-side, rgba(142, 228, 182, 0.3), rgba(142, 228, 182, 0)); /* mint, behind the hero diagram */
-  /* Hero texture: ink dots at 6% on a 24px grid (Hero masks it to fade at the edges). */
-  --hero-dots: radial-gradient(circle, color-mix(in srgb, var(--ink) 6%, transparent) 1.25px, transparent 1.75px);
   --glow-footer: radial-gradient(closest-side, rgba(61, 203, 127, 0.11), rgba(142, 228, 182, 0.07) 55%, rgba(142, 228, 182, 0) 100%);
   --selection-bg: var(--accent);
   --selection-ink: var(--ink);
