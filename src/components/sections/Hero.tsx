@@ -3,14 +3,14 @@ import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { PillButton } from "@/components/primitives/PillButton";
-import { HeroBeam } from "@/components/visuals/HeroBeam";
+import { ClaimStack } from "@/components/visuals/ClaimStack";
 import { hero, site } from "@/content/site";
 import { CONTACT_HREF } from "@/lib/site";
 
 /*
- * Three grid items so the diagram can sit in the middle on phones:
- *   phones:  headline + subline → diagram → buttons (diagram on the first screen)
- *   lg+:     headline + subline / buttons stacked in 7 columns, diagram spanning both
+ * Three grid items so the claim stack can sit in the middle on phones:
+ *   phones:  headline + subline → claim stack → buttons (stack on the first screen)
+ *   lg+:     headline + subline / buttons stacked in 7 columns, stack spanning both
  *            rows in the other 5.
  */
 export function Hero() {
@@ -39,7 +39,7 @@ export function Hero() {
         </div>
 
         <Reveal delay={0.25} className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
-          <HeroBeam />
+          <ClaimStack />
         </Reveal>
 
         <Reveal delay={0.12} className="min-w-0 lg:col-span-7 lg:self-start lg:pt-10">

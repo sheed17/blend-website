@@ -60,6 +60,10 @@
   --expiring: #b45309;
   --expiring-tint: #fef3e2;
   --destructive: #b42318;
+  /* How it works task pile: off-white sticky notes with amber time tags */
+  --note: #fafaf7;
+  --tag: #e8b44c;
+  --tag-tint: color-mix(in srgb, #e8b44c 16%, transparent);
 
   /* Roles */
   --focus: var(--accent-strong);

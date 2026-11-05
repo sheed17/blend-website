@@ -55,6 +55,9 @@
   /* Status */
   --color-expiring: var(--expiring);
   --color-expiring-tint: var(--expiring-tint);
+  --color-note: var(--note);
+  --color-tag: var(--tag);
+  --color-tag-tint: var(--tag-tint);
 
   /*
    * shadcn / 21st.dev semantic names, mapped to the theme. Pasted components use

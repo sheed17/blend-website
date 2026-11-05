@@ -32,6 +32,15 @@ export const hero = {
   /** Small muted lines under the hero buttons, in this order. */
   pricing: "First month free. After that, 25% of what we recover. Nothing if nothing is.",
   audience: "Built for 3PLs and the brands they ship for.",
+  /** Hero card stack: each problem drops in, then flips to `claimedLabel` (detail line stays). */
+  claimedLabel: "Claimed ✓",
+  claims: [
+    { title: "Damaged in transit", detail: "Candle order · arrived broken" },
+    { title: "Lost package", detail: "No scan for 12 days" },
+    { title: "Missing item", detail: "1 of 3 in the box" },
+    { title: "Crushed box", detail: "Supplement order · leaking" },
+    { title: "Never delivered", detail: "Marked delivered, never arrived" },
+  ],
 } as const;
 
 /** Hero + How it works diagram: signals → Blend → your brands. Icons only, no carrier names. */
