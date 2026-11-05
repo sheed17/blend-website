@@ -31,7 +31,8 @@ export function Footer() {
             as="p"
             src="/media/strip.mp4"
             fallback="/media/strip-anim.webp"
-            videoClassName="brightness-[0.7] contrast-125 saturate-125"
+            videoClassName="[filter:grayscale(1)_contrast(1.2)_brightness(0.55)]"
+            tintClassName="bg-[#0f3d2a]/50"
             className="mx-auto max-w-[14ch] text-balance text-[clamp(3rem,12vw,12rem)] font-bold leading-[0.9] tracking-headline text-ink max-sm:text-[21vw] max-sm:leading-[0.86]"
           >
             {footer.tagline.map((line, i) => (

@@ -118,7 +118,7 @@ export const outcomes = {
     { title: "Effortless", body: "An hour of setup. We do the filing." },
     { title: "Compounding", body: "Every claim we file makes the next one faster." },
   ],
-  setupSteps: ["Carrier accounts connected", "Brands confirmed", "Nothing else to do"],
+  setupSteps: ["Carrier accounts connected", "Brands confirmed", "We file every claim"],
 } as const;
 
 export const vision = {

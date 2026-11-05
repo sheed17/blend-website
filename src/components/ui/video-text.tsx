@@ -27,6 +27,8 @@ export interface VideoTextProps {
   className?: string
   /** Classes for the video / fallback image (e.g. a filter to keep the fill readable). */
   videoClassName?: string
+  /** Classes for a layer over the video / fallback (e.g. a brand-colour tint). Omit for none. */
+  tintClassName?: string
   as?: ElementType
 }
 
@@ -36,6 +38,7 @@ export function VideoText({
   children,
   className,
   videoClassName,
+  tintClassName,
   as: Component = "div",
 }: VideoTextProps) {
   const ref = useRef<HTMLElement>(null)
@@ -62,6 +65,9 @@ export function VideoText({
       {useFallback && (
         // eslint-disable-next-line @next/next/no-img-element -- animated WebP, served as-is
         <img aria-hidden="true" alt="" src={fallback} decoding="async" className={media} />
+      )}
+      {tintClassName && (
+        <span aria-hidden="true" className={cn("pointer-events-none absolute inset-0", tintClassName)} />
       )}
       {/* The shadow covers sub-pixel seams at the box edge, so no sliver of video shows there. */}
       <span className="relative block bg-(--knockout-light) py-[0.06em] text-(--knockout-dark) shadow-[0_0_0_2px_var(--knockout-light)] mix-blend-screen">
