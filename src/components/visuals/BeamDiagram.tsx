@@ -4,6 +4,7 @@ import { Mail, Package, PackageX, ScanBarcode, Truck, type LucideIcon } from "lu
 import { createRef, useMemo, useRef, type RefObject } from "react";
 import { LogoMark } from "@/components/brand/LogoMark";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
+import { ParcelFlow } from "@/components/visuals/ParcelFlow";
 import { beam } from "@/content/site";
 import { colors } from "@/lib/colors";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,8 @@ import { cn } from "@/lib/utils";
  * Signals → Blend → your brands, built on Magic UI's Animated Beam
  * ("Multiple Inputs" layout). Icons only: no carrier names or logos.
  *
- * - No `step`: hero mode. Every signal pulses into Blend; Blend pulses to "$".
+ * - No `step`: hero mode. Quiet static beams carry parcel traffic (ParcelFlow):
+ *   damaged and lost parcels go into Blend, $ coins come out to "$".
  * - `step` 0 / 1 / 2 (How it works): 0 highlights one signal, 1 sends it into
  *   Blend, 2 sends the money on to "$".
  */
@@ -49,7 +51,6 @@ const SIZES: Record<Size, Record<string, string>> = {
 
 const SHADOW = "shadow-[0_1px_2px_color-mix(in_srgb,var(--ink)_6%,transparent),0_8px_24px_-12px_color-mix(in_srgb,var(--ink)_20%,transparent)]";
 const HUB = "border-hub-line bg-hub shadow-(--hub-shadow)";
-const STAGGER = 0.55; // seconds between signal pulses
 const DURATION = 2.8;
 
 function SignalNode({
@@ -226,9 +227,27 @@ export function BeamDiagram({
       {hero ? (
         <>
           {signalRefs.map((r, i) => (
-            <Pulse key={i} containerRef={containerRef} fromRef={r} toRef={centerRef} animated delay={i * STAGGER} />
+            <AnimatedBeam
+              key={i}
+              containerRef={containerRef}
+              fromRef={r}
+              toRef={centerRef}
+              animated={false}
+              pathColor={colors.beamTrack}
+              pathOpacity={0.45}
+              pathWidth={2.5}
+            />
           ))}
-          <Pulse containerRef={containerRef} fromRef={centerRef} toRef={moneyRef} animated delay={0.9} width={3.5} green />
+          <AnimatedBeam
+            containerRef={containerRef}
+            fromRef={centerRef}
+            toRef={moneyRef}
+            animated={false}
+            pathColor={colors.beam}
+            pathOpacity={0.5}
+            pathWidth={3.5}
+          />
+          <ParcelFlow containerRef={containerRef} laneRefs={signalRefs} hubRef={centerRef} moneyRef={moneyRef} />
         </>
       ) : (
         <>
