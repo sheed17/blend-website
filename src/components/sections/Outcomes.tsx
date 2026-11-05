@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import type { ComponentProps } from "react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
+import { MagicCard } from "@/components/ui/magic-card";
 import { outcomes } from "@/content/site";
 import { cn } from "@/lib/utils";
 
@@ -28,28 +29,33 @@ function RisingBars() {
   );
 }
 
-function SetupChecklist() {
+/*
+ * Magic Card spotlight: mint (#8EE4B6) at low opacity, following the mouse. A touch of
+ * mint on the border ring too. Mouse only, so touch devices get plain cards.
+ */
+const MINT = "var(--mint)";
+const SPOT = {
+  gradientSize: 320,
+  gradientColor: MINT,
+  gradientFrom: `color-mix(in srgb, ${MINT} 70%, transparent)`,
+  gradientTo: `color-mix(in srgb, ${MINT} 20%, transparent)`,
+} as const;
+
+function Card({ dark = false, ...props }: { dark?: boolean } & ComponentProps<typeof MagicCard>) {
   return (
-    <ul aria-hidden="true" className="space-y-2.5">
-      {outcomes.setupSteps.map((s, i) => (
-        <li key={s} className="flex items-center gap-3 rounded-xl bg-white px-3.5 py-2.5 text-[14px] text-ink ring-1 ring-line">
-          <span
-            className={cn(
-              "flex size-5 items-center justify-center rounded-full",
-              i === outcomes.setupSteps.length - 1 ? "bg-brand text-ink" : "bg-ink text-white",
-            )}
-          >
-            <Check className="size-3" strokeWidth={3} />
-          </span>
-          {s}
-        </li>
-      ))}
-    </ul>
+    <MagicCard
+      {...SPOT}
+      gradientOpacity={dark ? 0.12 : 0.3}
+      background={dark ? "var(--ink)" : "var(--surface)"}
+      borderColor={dark ? "var(--ink)" : "var(--surface)"}
+      {...props}
+      className={cn("h-full rounded-[2rem]", props.className)}
+    />
   );
 }
 
 export function Outcomes() {
-  const [recovered, effortless, compounding] = outcomes.cards;
+  const [recovered, team, brands] = outcomes.cards;
 
   return (
     <section aria-labelledby="outcomes-title" className="bg-background py-28 md:py-40">
@@ -60,42 +66,48 @@ export function Outcomes() {
           {/* Large ink tile */}
           <li className="lg:col-span-2 lg:row-span-2">
             <Reveal className="h-full">
-              <div className="@container flex h-full flex-col justify-between gap-14 overflow-hidden rounded-[2rem] bg-ink p-7 text-white md:p-10 lg:min-h-[36rem]">
-                <div>
-                  <h3 className="text-[clamp(2.5rem,13cqw,7.5rem)] font-semibold leading-none tracking-headline">
-                    {recovered.title}
-                  </h3>
-                  <p className="mt-5 max-w-[30ch] text-lg leading-snug text-white/70 md:text-xl">{recovered.body}</p>
+              <Card dark>
+                <div className="@container flex h-full flex-col justify-between gap-14 p-7 text-white md:p-10 lg:min-h-[36rem]">
+                  <div>
+                    <h3 className="text-[clamp(2.5rem,13cqw,7.5rem)] font-semibold leading-none tracking-headline">
+                      {recovered.title}
+                    </h3>
+                    <p className="mt-5 max-w-[30ch] text-lg leading-snug text-white/70 md:text-xl">{recovered.body}</p>
+                  </div>
+                  <RisingBars />
                 </div>
-                <RisingBars />
-              </div>
+              </Card>
             </Reveal>
           </li>
 
           <li>
             <Reveal delay={0.08} className="h-full">
-              <div className="@container flex h-full flex-col justify-between gap-10 rounded-[2rem] bg-surface p-7 md:p-9">
-                <div>
-                  <h3 className="text-[clamp(2.25rem,14cqw,3.75rem)] font-semibold leading-none tracking-headline text-ink">
-                    {effortless.title}
+              <Card>
+                <div className="@container flex h-full flex-col p-7 md:p-9">
+                  <h3 className="max-w-[14ch] text-[clamp(2rem,11cqw,3rem)] font-semibold leading-[1.02] tracking-headline text-ink">
+                    {team.title}
                   </h3>
-                  <p className="mt-4 text-[17px] leading-snug text-body">{effortless.body}</p>
+                  <p className="mt-4 max-w-[34ch] text-[17px] leading-snug text-body">{team.body}</p>
                 </div>
-                <SetupChecklist />
-              </div>
+              </Card>
             </Reveal>
           </li>
 
           <li>
             <Reveal delay={0.16} className="h-full">
-              <div className="@container flex h-full flex-col justify-between gap-10 rounded-[2rem] bg-surface p-7 md:p-9">
-                <div>
-                  <h3 className="text-[clamp(2.25rem,14cqw,3.75rem)] font-semibold leading-none tracking-headline text-ink">
-                    {compounding.title}
-                  </h3>
-                  <p className="mt-4 text-[17px] leading-snug text-body">{compounding.body}</p>
+              <Card>
+                <div className="@container flex h-full flex-col justify-between gap-10 p-7 md:p-9">
+                  <div>
+                    <h3 className="max-w-[14ch] text-[clamp(2rem,11cqw,3rem)] font-semibold leading-[1.02] tracking-headline text-ink">
+                      {brands.title}
+                    </h3>
+                    <p className="mt-4 max-w-[34ch] text-[17px] leading-snug text-body">{brands.body}</p>
+                  </div>
+                  <p className="text-[clamp(1.75rem,9cqw,2.5rem)] font-semibold leading-none tracking-headline text-brand-text">
+                    {outcomes.brandsLine}
+                  </p>
                 </div>
-              </div>
+              </Card>
             </Reveal>
           </li>
         </ul>

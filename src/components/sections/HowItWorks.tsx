@@ -1,71 +1,62 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useInView } from "framer-motion";
+import { useRef, type CSSProperties } from "react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
+import { AnimatedList } from "@/components/ui/animated-list";
 import { howItWorks } from "@/content/site";
+import { cn } from "@/lib/utils";
 
 type Step = (typeof howItWorks.steps)[number];
+type Task = Step["diy"][number];
 
-/** Seconds between ticks, and before the first one. */
-const TICK = 0.25;
-const FIRST_TICK = 0.2;
+/** ms between items dropping in. */
+const DROP = 700;
 
-/** Empty box that fills and draws a check after `delay` once `on` turns true. Decorative. */
-function Checkbox({ on, delay }: { on: boolean; delay: number }) {
+const ROW = "flex items-center justify-between gap-4 rounded-xl border px-4 py-3 text-sm leading-snug sm:text-[15px]";
+
+function TaskRow({ task }: { task: Task }) {
   return (
-    <span aria-hidden="true" className="relative mt-[0.2em] size-[1.125rem] shrink-0 rounded-[5px] border-[1.5px] border-ink/25">
-      <motion.span
-        className="absolute -inset-[1.5px] rounded-[5px] bg-ink"
-        initial={{ opacity: 0, scale: 0.6 }}
-        animate={on ? { opacity: 1, scale: 1 } : undefined}
-        transition={{ delay, duration: 0.18, ease: "easeOut" }}
-      />
-      <svg viewBox="0 0 18 18" className="absolute -inset-[1.5px] size-[calc(100%+3px)]" fill="none">
-        <motion.path
-          d="M4.5 9.4 7.6 12.4 13.5 6"
-          stroke="white"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={on ? { pathLength: 1, opacity: 1 } : undefined}
-          transition={{ delay: delay + 0.08, duration: 0.2, ease: "easeOut" }}
-        />
-      </svg>
-    </span>
+    <div className={cn(ROW, "border-line bg-white text-ink shadow-[0_1px_2px_color-mix(in_srgb,var(--ink)_5%,transparent)]")}>
+      <span className="min-w-0">{task.task}</span>
+      <span className="shrink-0 font-mono text-[11px] text-muted-foreground">{task.when}</span>
+    </div>
   );
 }
 
-/** "Doing it yourself": the manual steps tick off one by one when the card scrolls into view. */
-function DiyChecklist({ items }: { items: readonly string[] }) {
+/**
+ * "Doing it yourself": the manual work behind a step drops in one task at a time
+ * (Magic UI Animated List, newest on top) once the card is in view, then "Blend does
+ * this." lands on top and stays. Runs once, no loop.
+ *
+ * The list area is a fixed height so nothing below moves while it fills. Desktop fits
+ * every item; phones show about five, with older ones fading out at the bottom.
+ */
+function DiyFeed({ tasks }: { tasks: readonly Task[] }) {
   const ref = useRef<HTMLDivElement>(null);
-  const on = useInView(ref, { once: true, amount: 0.6 });
+  const on = useInView(ref, { once: true, amount: 0.5 });
 
   return (
-    <div
-      ref={ref}
-      className="rounded-2xl border border-line bg-white p-6 shadow-[0_24px_60px_-40px_color-mix(in_srgb,var(--ink)_25%,transparent)] sm:p-8"
-    >
+    <div ref={ref} className="rounded-2xl border border-line bg-white p-5 shadow-[0_24px_60px_-40px_color-mix(in_srgb,var(--ink)_25%,transparent)] sm:p-6">
       <p className="text-sm font-medium text-muted-foreground">{howItWorks.diyLabel}</p>
-      <ul className="mt-5 space-y-3.5">
-        {items.map((item, i) => (
-          <li key={item} className="flex gap-3 text-base leading-snug text-ink">
-            <Checkbox on={on} delay={FIRST_TICK + i * TICK} />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-      <motion.p
-        className="mt-6 border-t border-line pt-5 text-lg font-semibold text-brand-text"
-        initial={{ opacity: 0, y: 6 }}
-        animate={on ? { opacity: 1, y: 0 } : undefined}
-        transition={{ delay: FIRST_TICK + items.length * TICK + 0.2, duration: 0.4, ease: "easeOut" }}
+      {/* sm+: tall enough for this card's rows (tasks + the Blend row; rows ~2.95rem, 0.5rem gaps, single line). */}
+      <div
+        style={{ "--rows": tasks.length + 1 } as CSSProperties}
+        className="mt-4 h-[17rem] overflow-hidden [mask-image:linear-gradient(to_bottom,#000_70%,transparent)] sm:h-[calc(var(--rows)*2.95rem+(var(--rows)-1)*0.5rem+0.25rem)] sm:[mask-image:none]"
       >
-        {howItWorks.diyDone}
-      </motion.p>
+        {on && (
+          <AnimatedList delay={DROP} className="gap-2">
+            {tasks.map((t) => (
+              <TaskRow key={t.task} task={t} />
+            ))}
+            <div key="blend" className={cn(ROW, "border-brand bg-brand font-semibold text-ink")}>
+              {howItWorks.diyDone}
+            </div>
+          </AnimatedList>
+        )}
+      </div>
     </div>
   );
 }
@@ -80,8 +71,8 @@ function StepRow({ step }: { step: Step }) {
         </h3>
         <p className="mt-6 max-w-[30ch] text-xl leading-snug tracking-[-0.01em] text-ink md:text-2xl">{step.body}</p>
       </Reveal>
-      <div className="min-w-0 lg:max-w-[520px] lg:justify-self-end lg:w-full">
-        <DiyChecklist items={step.diy} />
+      <div className="min-w-0 lg:w-full lg:max-w-[520px] lg:justify-self-end">
+        <DiyFeed tasks={step.diy} />
       </div>
     </li>
   );

@@ -100,21 +100,22 @@ export const whyUnclaimed = {
 
 export const howItWorks = {
   headline: "How it works.",
-  /** Heading and closing line of each step's checklist card. */
+  /** Title of each step's task-feed card, and the item that lands on top at the end. */
   diyLabel: "Doing it yourself",
   diyDone: "Blend does this.",
   /** Large line after the three steps. */
   closing: "At 80,000 parcels a month, that’s hundreds of claims, and a full-time job nobody at your 3PL has.",
+  /** `diy`: the manual work behind each step. `when` is the small muted label on the right. */
   steps: [
     {
       number: "01",
       title: "Find",
       body: "We surface every lost and damaged shipment across every brand in your warehouse, on UPS, FedEx, USPS, and regional carriers.",
       diy: [
-        "Check tracking on every parcel, every day",
-        "Spot the ones that stopped moving or came back damaged",
-        "Dig damage reports out of brand emails",
-        "Track every deadline before it passes",
+        { task: "Check tracking on every parcel", when: "every day" },
+        { task: "Spot the ones that stopped moving", when: "every day" },
+        { task: "Dig damage reports out of brand emails", when: "again" },
+        { task: "Track every deadline", when: "always" },
       ],
     },
     {
@@ -122,11 +123,12 @@ export const howItWorks = {
       title: "File",
       body: "We recover them under your accounts, built to each carrier’s exact requirements, inside every deadline.",
       diy: [
-        "Pull the tracking history",
-        "Get the item’s cost from the brand",
-        "Chase the customer for three photos",
-        "Fill out a different form for each carrier",
-        "Repeat for every single package",
+        { task: "Pull the tracking history", when: "per claim" },
+        { task: "Get the item’s cost from the brand", when: "waiting" },
+        { task: "Chase the customer for three photos", when: "again" },
+        { task: "Fill the UPS form", when: "per claim" },
+        { task: "Fill the FedEx form", when: "another form" },
+        { task: "Repeat for the next package", when: "again" },
       ],
     },
     {
@@ -134,10 +136,11 @@ export const howItWorks = {
       title: "Return",
       body: "The money lands back where it belongs. You get a clean statement every month.",
       diy: [
-        "Wait weeks for the carrier",
-        "Answer their follow-up questions",
-        "Find the payment and match it to the claim",
-        "Credit the right brand",
+        { task: "Wait weeks for the carrier", when: "weeks" },
+        { task: "Answer their follow-up", when: "again" },
+        { task: "Find the payment", when: "later" },
+        { task: "Match it to the claim", when: "by hand" },
+        { task: "Credit the right brand", when: "by hand" },
       ],
     },
   ],
@@ -151,10 +154,17 @@ export const outcomes = {
   headline: "What changes.",
   cards: [
     { title: "Recovered", body: "Money you were owed, back in your account." },
-    { title: "Effortless", body: "An hour of setup. We do the filing." },
-    { title: "Compounding", body: "Every claim we file makes the next one faster." },
+    {
+      title: "Nothing added to your team.",
+      body: "No new hire, no new software. We do the filing. You forward what we ask for.",
+    },
+    {
+      title: "A reason your brands stay.",
+      body: "Every month, you send your brands money back. That’s a conversation every 3PL wants to have.",
+    },
   ],
-  setupSteps: ["Carrier accounts connected", "Brands confirmed", "We file every claim"],
+  /** Large line at the bottom of the third card. */
+  brandsLine: "+ $ back to your brands",
 } as const;
 
 export const vision = {
