@@ -8,6 +8,7 @@ import { Nav } from "@/components/layout/Nav";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { site } from "@/content/site";
 import { SITE_URL, socialMetadata } from "@/lib/site";
+import { ACTIVE_THEME, THEMES } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,12 +19,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+  themeColor: THEMES[ACTIVE_THEME].themeColor,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+    <html lang="en" data-theme={ACTIVE_THEME} className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
       <body>
         <MotionProvider>
           <Nav />

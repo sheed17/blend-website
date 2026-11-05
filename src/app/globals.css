@@ -1,98 +1,85 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./theme.css";
 
 /* dark: utilities only apply under a .dark class (never set), so pasted
    21st.dev components don't flip to dark mode with the OS setting. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Blend design tokens. Tailwind v4 is configured in CSS: every --color-* here
- * becomes a utility (bg-brand, text-ink, border-line, ...).
+ * Every color lives in theme.css (one block per theme, picked by <html data-theme>).
+ * Here those variables become Tailwind utilities. `inline` makes each utility read the
+ * theme variable directly, so a section can re-scope a token (see [data-surface] in
+ * theme.css) and everything inside it follows.
  *
- * Two-tone green: bright `brand` is a FILL only, always with ink on top.
- * Green text on light backgrounds uses `brand-text`.
- *
- * WCAG contrast: ink on brand 8.96 · ink on brand-hover 7.09 ·
- * brand-text on white 5.36 / surface 5.03 / brand-tint 4.95 ·
- * paper on brand-deep 12.57 · mint on brand-deep 8.33 · body on white 7.76 ·
- * muted-foreground on white 4.98 / surface 4.67.
- * Never: white text on brand (2.09), brand as text or focus ring on white (2.09).
+ * Fill vs text: `brand` (--accent) is a FILL only, always with ink on top.
+ * Accent-colored text and focus rings use `brand-text` / `focus` (--accent-strong).
  */
-@theme {
-  /* Brand */
-  --color-brand: #3dcb7f; /* fills: buttons, badges, progress, chart bars, highlights */
-  --color-brand-hover: #2fb56d; /* hover / pressed fill */
-  --color-brand-text: #147a4b; /* green text and focus rings on light backgrounds */
-  --color-brand-tint: #ecf9f2; /* soft backgrounds, Found badge */
-  --color-brand-deep: #0c3b27; /* the dark Belief section */
-  --color-mint: #8ee4b6; /* accents and chart bars on dark backgrounds */
+@theme inline {
+  /* Accent */
+  --color-brand: var(--accent);
+  --color-brand-hover: var(--accent-hover);
+  --color-brand-text: var(--accent-strong);
+  --color-brand-tint: var(--accent-tint);
+  --color-mint: var(--accent-soft);
+  --color-accent-line: var(--accent-line);
+  --color-focus: var(--focus);
 
   /* Neutrals */
-  --color-ink: #0b1410; /* headlines, primary text, text on brand fills */
-  --color-body: #4a5550; /* paragraph text */
-  --color-line: #e5e9e6; /* borders, dividers */
-  --color-surface: #f6f8f6; /* cards, alt sections */
-  --color-paper: #ffffff; /* page background */
-  /* muted: exposed as text-muted-foreground (shadcn name), see :root. */
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-line: var(--border);
+  --color-surface: var(--surface);
+  --color-paper: var(--paper);
+  --color-white: var(--paper);
+  --color-deep: var(--deep);
+  --color-on-deep: var(--on-deep);
+
+  /* Roles */
+  --color-hero: var(--hero);
+  --color-hero-ink: var(--hero-ink);
+  --color-banner: var(--banner);
+  --color-banner-ink: var(--banner-ink);
+  --color-banner-accent: var(--banner-accent);
+  --color-banner-line: var(--banner-line);
+  --color-button: var(--button);
+  --color-button-ink: var(--button-ink);
+  --color-button-hover: var(--button-hover);
+  --color-button-ring: var(--button-ring);
+  --color-node: var(--node);
+  --color-node-line: var(--node-line);
+  --color-hub: var(--hub);
+  --color-hub-line: var(--hub-line);
 
   /* Status */
-  --color-expiring: #b45309;
-  --color-expiring-tint: #fef3e2;
+  --color-expiring: var(--expiring);
+  --color-expiring-tint: var(--expiring-tint);
 
-  --tracking-headline: -0.04em;
-  --tracking-wordmark: -0.045em;
-}
-
-/*
- * shadcn / 21st.dev semantic tokens, mapped to Blend.
- * Pasted components use these names (bg-background, bg-primary,
- * text-muted-foreground, border-border, ring, ...) and pick up the brand.
- */
-:root {
-  --radius: 0.875rem;
-  --background: #ffffff;
-  --foreground: #0b1410;
-  --card: #ffffff;
-  --card-foreground: #0b1410;
-  --popover: #ffffff;
-  --popover-foreground: #0b1410;
-  --primary: #3dcb7f;
-  --primary-foreground: #0b1410;
-  --secondary: #f6f8f6;
-  --secondary-foreground: #0b1410;
-  --muted: #f6f8f6;
-  /* muted, darkened from #7C8781 (3.72:1, failed AA for small text) to pass. */
-  --muted-foreground: #68726d;
-  --accent: #ecf9f2;
-  --accent-foreground: #0b1410;
-  --destructive: #b42318;
-  --border: #e5e9e6;
-  --input: #e5e9e6;
-  --ring: #147a4b;
-}
-
-@theme inline {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  /*
+   * shadcn / 21st.dev semantic names, mapped to the theme. Pasted components use
+   * these (bg-background, bg-primary, text-muted-foreground, border-border, ring, ...).
+   */
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--paper);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--paper);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--on-accent);
+  --color-secondary: var(--surface);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--surface);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--accent-tint);
+  --color-accent-foreground: var(--ink);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-input: var(--border);
+  --color-ring: var(--focus);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 4px);
@@ -100,34 +87,43 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+@theme {
+  --tracking-headline: -0.04em;
+  --tracking-wordmark: -0.045em;
+}
+
+:root {
+  --radius: 0.875rem;
+}
+
 @layer base {
   *,
   ::before,
   ::after {
-    border-color: var(--color-border);
+    border-color: var(--border);
   }
 
   html {
-    background: var(--color-background);
-    color: var(--color-foreground);
+    background: var(--bg);
+    color: var(--ink);
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background: var(--color-background);
-    color: var(--color-foreground);
+    background: var(--bg);
+    color: var(--ink);
     font-family: var(--font-sans);
     overflow-x: clip;
   }
 
   ::selection {
-    background: var(--color-brand);
-    color: var(--color-ink);
+    background: var(--selection-bg);
+    color: var(--selection-ink);
   }
 }
 
 /*
- * Grain: low-opacity SVG noise for the brand-deep section.
+ * Grain: low-opacity SVG noise for the deep (Belief) section.
  * Content inside must sit above it (relative z-[2]).
  */
 @layer components {
@@ -153,7 +149,8 @@
    * Works across line wraps (each line gets its own swipe).
    */
   .marker {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath fill='%233DCB7F' d='M7 24C58 13 141 19 214 15C282 11 349 9 393 17C398 39 396 66 391 85C322 93 241 87 163 91C104 94 47 91 9 89C4 68 3 45 7 24Z'/%3E%3Cpath fill='%232FB56D' fill-opacity='0.45' d='M18 80C140 85 268 81 388 75L389 83C270 90 140 93 17 87Z'/%3E%3C/svg%3E");
+    background-image: var(--marker-image);
+    color: var(--marker-ink);
     background-repeat: no-repeat;
     background-position: 0 92%;
     background-size: 100% 60%;

@@ -25,6 +25,7 @@ export interface AnimatedBeamProps {
   startYOffset?: number
   endXOffset?: number
   endYOffset?: number
+  /** Blend: colors may be CSS var() strings; they're applied via style, not attributes. */
   /** Blend addition: false renders the static path only (used for prefers-reduced-motion). */
   animated?: boolean
 }
@@ -38,11 +39,11 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   reverse = false, // Include the reverse prop
   duration = 5,
   delay = 0,
-  pathColor = "gray",
+  pathColor = "var(--beam-track)",
   pathWidth = 2,
   pathOpacity = 0.2,
-  gradientStartColor = "#ffaa40",
-  gradientStopColor = "#9c40ff",
+  gradientStartColor = "var(--beam)",
+  gradientStopColor = "var(--beam)",
   repeat = Infinity,
   repeatDelay = 0,
   startXOffset = 0,
@@ -140,7 +141,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
     >
       <path
         d={pathD}
-        stroke={pathColor}
+        style={{ stroke: pathColor }}
         strokeWidth={pathWidth}
         strokeOpacity={pathOpacity}
         strokeLinecap="round"
@@ -180,12 +181,12 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
             repeatDelay,
           }}
         >
-          <stop stopColor={gradientStartColor} stopOpacity="0"></stop>
-          <stop stopColor={gradientStartColor}></stop>
-          <stop offset="32.5%" stopColor={gradientStopColor}></stop>
+          <stop style={{ stopColor: gradientStartColor }} stopOpacity="0"></stop>
+          <stop style={{ stopColor: gradientStartColor }}></stop>
+          <stop offset="32.5%" style={{ stopColor: gradientStopColor }}></stop>
           <stop
             offset="100%"
-            stopColor={gradientStopColor}
+            style={{ stopColor: gradientStopColor }}
             stopOpacity="0"
           ></stop>
         </motion.linearGradient>

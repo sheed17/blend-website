@@ -32,7 +32,7 @@ export default function PrivacyPage() {
               <span className={LEAD}>{page.questionsLead}</span>{" "}
               <a
                 href={CONTACT_HREF}
-                className="text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text"
+                className="text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
               >
                 {CONTACT_EMAIL}
               </a>

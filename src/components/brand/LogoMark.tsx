@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
  * footer (via Logo) and both beam diagrams' center node. Brand source files
  * (favicons, PNG exports) live in brand/ at the repo root.
  *
- * Full color by default. `mono` draws both tiles in currentColor (second tile at
+ * Full color by default, from the theme (--logo-back / --logo-front / --logo-overlap). `mono` draws both tiles in currentColor (second tile at
  * 50% opacity, no overlap shape) for one-color spots; set the color with text-* classes.
  *
  * The tiles sit inside 6px (sides) / 8px (top & bottom) of padding in the 48×48 box,
@@ -38,9 +38,9 @@ export function LogoMark({ className, title, mono = false, style }: LogoMarkProp
         </>
       ) : (
         <>
-          <rect x="6" y="8" width="24" height="24" rx="7" fill="#147A4B" />
-          <rect x="18" y="16" width="24" height="24" rx="7" fill="#3DCB7F" />
-          <path d="M18 23a7 7 0 0 1 7-7h5v9a7 7 0 0 1-7 7h-5z" fill="#8EE4B6" />
+          <rect x="6" y="8" width="24" height="24" rx="7" style={{ fill: "var(--logo-back)" }} />
+          <rect x="18" y="16" width="24" height="24" rx="7" style={{ fill: "var(--logo-front)" }} />
+          <path d="M18 23a7 7 0 0 1 7-7h5v9a7 7 0 0 1-7 7h-5z" style={{ fill: "var(--logo-overlap)" }} />
         </>
       )}
     </svg>

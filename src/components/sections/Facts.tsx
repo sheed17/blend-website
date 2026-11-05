@@ -24,7 +24,7 @@ export function Facts() {
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline decoration-muted-foreground/40 underline-offset-4 transition-colors hover:text-ink hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text"
+                    className="underline decoration-muted-foreground/40 underline-offset-4 transition-colors hover:text-ink hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
                   >
                     {item.source}
                   </a>

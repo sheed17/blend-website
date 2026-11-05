@@ -46,7 +46,7 @@ function CarrierTable() {
       role="region"
       aria-label={t.headline}
       tabIndex={0}
-      className="mt-6 overflow-x-auto border border-line focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text"
+      className="mt-6 overflow-x-auto border border-line focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
     >
       <table className="w-full min-w-[560px] border-collapse text-left text-[15px] leading-snug">
         <thead>

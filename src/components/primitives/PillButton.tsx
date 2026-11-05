@@ -3,13 +3,13 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const variants = {
-  // Bright brand fill always carries ink text (8.96:1). Never white on brand.
-  brand: "bg-brand text-ink hover:bg-brand-hover active:bg-brand-hover",
+  // Theme primary button (--button*): green = accent fill + ink; kinetic = ink fill + white, lime hover ring.
+  brand: "bg-button text-button-ink ring-button-ring hover:bg-button-hover hover:ring-2 active:bg-button-hover",
   ink: "bg-ink text-white hover:bg-ink/85",
   light: "bg-white text-ink ring-1 ring-line hover:ring-ink/30",
 } as const;
 
-/** Pill-shaped link with a trailing arrow. Brand fill by default. */
+/** Pill-shaped link with a trailing arrow. Theme primary button by default. */
 export function PillButton({
   href,
   children,
@@ -27,7 +27,7 @@ export function PillButton({
     <a
       href={href}
       className={cn(
-        "group inline-flex items-center gap-2.5 rounded-full font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text",
+        "group inline-flex items-center gap-2.5 rounded-full font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus",
         size === "md" ? "py-3.5 pl-6 pr-5 text-base" : "py-2 pl-4 pr-3.5 text-sm",
         variants[variant],
         className,

@@ -11,7 +11,7 @@ import { nav, site } from "@/content/site";
 import { CONTACT_HREF } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-const FOCUS = "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text";
+const FOCUS = "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus";
 
 /** Active page link in ink, others muted. Underline on hover, 150ms color fade. */
 function linkClass(active: boolean) {
@@ -23,7 +23,8 @@ function linkClass(active: boolean) {
 }
 
 /**
- * Sticky top bar on every page, 64px tall. Transparent at the top of the page; after
+ * Sticky top bar on every page, 64px tall. At the top of the page it takes the hero
+ * background on the home page (transparent elsewhere); after
  * 8px of scroll it gets the page background at 80%, a backdrop blur, and a 1px bottom
  * border. Below md the links move into a full-width panel under the bar, opened by a
  * menu button and closed by a link click or Escape.
@@ -60,15 +61,20 @@ export function Nav() {
     if ((e.target as HTMLElement).closest("a")) close();
   };
 
+  // At the top of the home page the bar sits on the hero, so it takes the hero's
+  // surface (transparent in green, orange in kinetic; see [data-surface] in theme.css).
+  const overHero = pathname === "/" && !scrolled && !open;
+
   return (
     <header
+      data-surface={overHero ? "nav-hero" : undefined}
       className={cn(
         "sticky top-0 z-50 border-b transition-colors duration-150",
         open
           ? "border-line bg-background"
           : scrolled
             ? "border-line bg-background/80 backdrop-blur-md"
-            : "border-transparent bg-transparent",
+            : cn("border-transparent", overHero ? "bg-hero" : "bg-transparent"),
       )}
     >
       <Container className="flex h-16 items-center justify-between">

@@ -24,7 +24,7 @@ export function Team() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${person.name} on ${team.linkLabel}`}
-                  className="mt-3 inline-block text-sm text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text"
+                  className="mt-3 inline-block text-sm text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
                 >
                   {team.linkLabel}
                 </a>

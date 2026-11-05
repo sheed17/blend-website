@@ -81,11 +81,11 @@ export function HowItWorks() {
               <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2rem] bg-surface p-10">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -bottom-1/3 left-1/2 aspect-square w-[120%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(61,203,127,0.14),rgba(255,255,255,0)_100%)]"
+                  className="pointer-events-none absolute -bottom-1/3 left-1/2 aspect-square w-[120%] -translate-x-1/2 rounded-full bg-(image:--glow-steps)"
                 />
                 {/* One persistent diagram: its state follows the active step (no card swapping,
                     so beam paths stay aligned). */}
-                <div className="relative w-full max-w-[460px] overflow-hidden rounded-2xl border border-line bg-white shadow-[0_30px_80px_-40px_rgba(11,20,16,0.28)]">
+                <div className="relative w-full max-w-[460px] overflow-hidden rounded-2xl border border-line bg-white shadow-[0_30px_80px_-40px_color-mix(in_srgb,var(--ink)_28%,transparent)]">
                   <BeamDiagram step={active} className="min-h-[380px] px-8 py-10" />
                 </div>
                 <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2" aria-hidden="true">
@@ -94,7 +94,7 @@ export function HowItWorks() {
                       key={s.number}
                       className={cn(
                         "h-1.5 rounded-full transition-all duration-500",
-                        i === active ? "w-6 bg-brand" : "w-1.5 bg-ink/20",
+                        i === active ? "w-6 bg-accent-line" : "w-1.5 bg-ink/20",
                       )}
                     />
                   ))}

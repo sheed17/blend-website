@@ -9,11 +9,11 @@ import { CONTACT_HREF } from "@/lib/site";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pb-24 pt-16 md:pb-32 md:pt-24 lg:min-h-[calc(100svh-72px)] lg:pt-28">
+    <section data-surface="hero" className="relative overflow-hidden bg-hero pb-24 pt-16 md:pb-32 md:pt-24 lg:min-h-[calc(100svh-72px)] lg:pt-28">
       <Container className="relative grid items-center gap-16 lg:grid-cols-12 lg:gap-10">
         <div className="min-w-0 lg:col-span-7">
           <Reveal>
-            <h1 className="text-balance text-[clamp(2.75rem,6vw,6rem)] font-semibold leading-[0.95] tracking-headline text-ink">
+            <h1 className="text-balance text-[clamp(2.75rem,6vw,6rem)] font-semibold leading-[0.95] tracking-headline text-hero-ink">
               {/* Space kept inside the same text node so copied/extracted text reads "commerce leaves". */}
               {`${hero.headlineLead} `}
               <span className="block">
@@ -27,7 +27,7 @@ export function Hero() {
               <PillButton href={CONTACT_HREF}>{site.contactLabel}</PillButton>
               <Link
                 href="/how-it-works"
-                className="group inline-flex items-center gap-2 rounded-sm text-base font-medium text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text"
+                className="group inline-flex items-center gap-2 rounded-sm text-base font-medium text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
               >
                 {hero.secondaryCta}
                 <ArrowDown

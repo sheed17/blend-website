@@ -49,7 +49,8 @@ const SIZES: Record<Size, Record<string, string>> = {
   },
 };
 
-const SHADOW = "shadow-[0_1px_2px_rgba(11,20,16,0.06),0_8px_24px_-12px_rgba(11,20,16,0.2)]";
+const SHADOW = "shadow-[0_1px_2px_color-mix(in_srgb,var(--ink)_6%,transparent),0_8px_24px_-12px_color-mix(in_srgb,var(--ink)_20%,transparent)]";
+const HUB = "border-hub-line bg-hub shadow-(--hub-shadow)";
 const STAGGER = 0.55; // seconds between signal pulses
 const DURATION = 2.8;
 
@@ -75,7 +76,7 @@ function SignalNode({
       className={cn(
         "group relative z-10 flex items-center justify-center border transition-colors duration-500 hover:z-20",
         s.node,
-        highlighted ? "border-brand bg-brand" : "border-line bg-white",
+        highlighted ? "border-brand bg-brand" : "border-node-line bg-node",
         SHADOW,
       )}
     >
@@ -91,7 +92,7 @@ function SignalNode({
   );
 }
 
-/** Pulse beam: neutral path + bright green pulse. Static green path when done or not animated. */
+/** Pulse beam: neutral path + bright accent pulse. Static accent path when done or not animated. */
 function Pulse({
   containerRef,
   fromRef,
@@ -120,11 +121,11 @@ function Pulse({
       fromRef={fromRef}
       toRef={toRef}
       animated={moving}
-      pathColor={green || done ? colors.brand : colors.muted}
+      pathColor={green || done ? colors.beam : colors.beamTrack}
       pathOpacity={done || (green && !moving) ? 1 : green ? 0.4 : 0.45}
       pathWidth={width}
-      gradientStartColor={colors.brand}
-      gradientStopColor={colors.brand}
+      gradientStartColor={colors.beam}
+      gradientStopColor={colors.beam}
       delay={delay}
       duration={DURATION}
     />
@@ -183,8 +184,8 @@ export function BeamDiagram({
         role="img"
         aria-label={beam.centerLabel}
         className={cn(
-          "relative z-10 flex shrink-0 items-center justify-center rounded-full border border-line bg-white",
-          "shadow-[0_12px_36px_-12px_rgba(11,20,16,0.28)]",
+          "relative z-10 flex shrink-0 items-center justify-center rounded-full border",
+          HUB,
           s.circle,
         )}
       >
@@ -208,7 +209,7 @@ export function BeamDiagram({
             "relative z-10 flex items-center justify-center rounded-full border font-mono font-medium text-ink transition-colors duration-500",
             s.circle,
             s.dollar,
-            moneyLit ? "border-brand bg-brand" : "border-line bg-white",
+            moneyLit ? "border-brand bg-brand" : "border-node-line bg-node",
             SHADOW,
           )}
         >
@@ -244,7 +245,7 @@ export function BeamDiagram({
                 fromRef={r}
                 toRef={centerRef}
                 animated={false}
-                pathColor={colors.muted}
+                pathColor={colors.beamTrack}
                 pathOpacity={0.3}
               />
             ),
@@ -279,12 +280,12 @@ export function BeamDiagram({
 
 const STEP_NODE = "flex size-11 shrink-0 items-center justify-center rounded-xl border";
 const STEP_CIRCLE = "flex size-[4.5rem] shrink-0 items-center justify-center rounded-full border";
-const STEP_LINE = "h-[3px] w-12 shrink-0 rounded-full bg-brand sm:w-20";
+const STEP_LINE = "h-[3px] w-12 shrink-0 rounded-full bg-(--beam) sm:w-20";
 
 function StaticSignal({ index, highlighted }: { index: number; highlighted: boolean }) {
   const Icon = ICONS[index];
   return (
-    <div className={cn(STEP_NODE, highlighted ? "border-brand bg-brand" : "border-line bg-white", SHADOW)}>
+    <div className={cn(STEP_NODE, highlighted ? "border-brand bg-brand" : "border-node-line bg-node", SHADOW)}>
       <Icon aria-hidden="true" className="size-5 text-ink" strokeWidth={1.75} />
     </div>
   );
@@ -292,7 +293,7 @@ function StaticSignal({ index, highlighted }: { index: number; highlighted: bool
 
 function StaticBlend() {
   return (
-    <div className={cn(STEP_CIRCLE, "border-line bg-white shadow-[0_12px_36px_-12px_rgba(11,20,16,0.28)]")}>
+    <div className={cn(STEP_CIRCLE, HUB)}>
       <LogoMark className="h-12 w-auto" />
     </div>
   );

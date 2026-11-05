@@ -6,6 +6,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { outcomes } from "@/content/site";
+import { colors } from "@/lib/colors";
 import { cn } from "@/lib/utils";
 
 /** Abstract rising bars on ink: money coming back, month over month. No axes, no numbers. */
@@ -58,7 +59,7 @@ function CompoundingArcs() {
           key={r}
           d={`M 4 ${100 - 4} A ${r} ${r} 0 0 1 ${4 + r} ${100 - 4 - r}`}
           fill="none"
-          stroke={i === radii.length - 1 ? "#3DCB7F" : "#0B1410"}
+          style={{ stroke: i === radii.length - 1 ? colors.accentLine : colors.ink }}
           strokeOpacity={i === radii.length - 1 ? 1 : 0.15 + i * 0.15}
           strokeWidth={i === radii.length - 1 ? 5 : 3.5}
           strokeLinecap="round"

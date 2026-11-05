@@ -16,10 +16,10 @@ async function CurrentYear() {
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-white">
-      {/* Faint green glow rising from the bottom edge */}
+      {/* Faint accent glow rising from the bottom edge */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-[45%] left-1/2 aspect-[2/1] w-[160vw] max-w-[2000px] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(61,203,127,0.22),rgba(236,249,242,0.8)_55%,rgba(255,255,255,0)_100%)] md:w-[120vw]"
+        className="pointer-events-none absolute -bottom-[45%] left-1/2 aspect-[2/1] w-[160vw] max-w-[2000px] -translate-x-1/2 rounded-[50%] bg-(image:--glow-footer) md:w-[120vw]"
       />
 
       <Container className="relative pt-36 text-center md:pt-48">
@@ -39,14 +39,14 @@ export function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text"
+                className="underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
               >
                 {link.label}
               </Link>
             ))}
             <a
               href={CONTACT_HREF}
-              className="underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-text"
+              className="underline decoration-ink/30 underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
             >
               {CONTACT_EMAIL}
             </a>

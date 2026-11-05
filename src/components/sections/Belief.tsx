@@ -1,10 +1,10 @@
 import { ScrollTextReveal } from "@/components/motion/ScrollTextReveal";
 import { belief } from "@/content/site";
 
-/** The one brand-deep section: words light up as you scroll; the last line lands in mint. */
+/** The one deep section: words light up as you scroll; the last line lands in mint. */
 export function Belief() {
   return (
-    <section aria-labelledby="belief" className="grain bg-brand-deep text-paper">
+    <section aria-labelledby="belief" className="grain bg-deep text-on-deep">
       <ScrollTextReveal
         id="belief"
         statement={belief.statement}

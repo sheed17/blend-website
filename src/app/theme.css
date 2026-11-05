@@ -1,0 +1,189 @@
+/*
+ * Blend themes: the ONLY place colors are defined.
+ *
+ * The active theme is picked by <html data-theme="…">, which comes from
+ * ACTIVE_THEME in src/lib/theme.ts. globals.css maps these variables onto
+ * Tailwind utilities (bg-brand, text-ink, border-line, ...) with @theme inline,
+ * so components never hold a color value of their own.
+ *
+ * Core tokens (every theme defines these):
+ *   --bg            page background
+ *   --surface       cards, alt sections
+ *   --ink           headlines, primary text, text on accent fills
+ *   --muted         small secondary text (≥4.5:1 on --bg and --surface)
+ *   --accent        bright fill: highlighted nodes, badges, chart bars. Always ink on top.
+ *   --accent-strong accent as text / focus ring on light backgrounds (≥4.5:1)
+ *   --accent-soft   accent on dark backgrounds (bars, the Belief accent line)
+ *   --on-accent     text on --accent fills
+ *   --border        borders, dividers
+ *
+ * Role tokens below them say where each color goes (hero, banner, buttons, beams),
+ * which is how two themes with different structures share the same components.
+ */
+
+/* ------------------------------------------------------------------------------------------
+ * GREEN: the original palette. Values are exactly the pre-theme ones.
+ *
+ * WCAG contrast: ink on accent 8.96 · ink on accent-hover 7.09 ·
+ * accent-strong on white 5.36 / surface 5.03 / accent-tint 4.95 ·
+ * white on deep 12.57 · accent-soft on deep 8.33 · body on white 7.76 ·
+ * muted on white 4.98 / surface 4.67.
+ * Never: white text on accent (2.09), accent as text or focus ring on white (2.09).
+ * ---------------------------------------------------------------------------------------- */
+:root,
+:root[data-theme="green"] {
+  /* Core */
+  --bg: #ffffff;
+  --surface: #f6f8f6;
+  --ink: #0b1410;
+  --muted: #68726d; /* darkened from #7C8781 (3.72:1, failed AA for small text) */
+  --accent: #3dcb7f;
+  --accent-strong: #147a4b;
+  --accent-soft: #8ee4b6;
+  --on-accent: #0b1410;
+  --border: #e5e9e6;
+
+  /* Extended palette */
+  --paper: #ffffff; /* white: cards, text on ink */
+  --body: #4a5550; /* paragraph text */
+  --accent-hover: #2fb56d;
+  --accent-tint: #ecf9f2; /* soft backgrounds */
+  --brand: #3dcb7f; /* primary / big color blocks */
+  --on-brand: #0b1410;
+  --deep: #0c3b27; /* the dark Belief section */
+  --on-deep: #ffffff;
+  --expiring: #b45309;
+  --expiring-tint: #fef3e2;
+  --destructive: #b42318;
+
+  /* Roles */
+  --focus: var(--accent-strong);
+  --accent-line: var(--accent); /* beams, arcs, progress marks on light backgrounds */
+  /* Radial light behind sections (original literal stops, so green renders pixel-identical) */
+  --glow-hero: radial-gradient(closest-side, #ecf9f2, rgba(255, 255, 255, 0));
+  --glow-steps: radial-gradient(closest-side, rgba(61, 203, 127, 0.14), rgba(255, 255, 255, 0) 100%);
+  --glow-footer: radial-gradient(closest-side, rgba(61, 203, 127, 0.22), rgba(236, 249, 242, 0.8) 55%, rgba(255, 255, 255, 0) 100%);
+  --selection-bg: var(--accent);
+  --selection-ink: var(--ink);
+
+  --button: var(--accent);
+  --button-ink: var(--on-accent);
+  --button-hover: var(--accent-hover);
+  --button-ring: transparent;
+
+  --hero: transparent; /* hero background (and the nav above it, at the top of the page) */
+  --hero-ink: var(--ink); /* hero headline */
+  --marker-ink: currentColor;
+  --marker-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath fill='%233DCB7F' d='M7 24C58 13 141 19 214 15C282 11 349 9 393 17C398 39 396 66 391 85C322 93 241 87 163 91C104 94 47 91 9 89C4 68 3 45 7 24Z'/%3E%3Cpath fill='%232FB56D' fill-opacity='0.45' d='M18 80C140 85 268 81 388 75L389 83C270 90 140 93 17 87Z'/%3E%3C/svg%3E");
+
+  --banner: var(--surface);
+  --banner-ink: var(--ink);
+  --banner-accent: var(--accent-strong); /* the banner's second line */
+  --banner-line: var(--border);
+  --banner-glow: radial-gradient(closest-side, rgba(61, 203, 127, 0.16), rgba(61, 203, 127, 0) 100%);
+  --banner-glow-2: radial-gradient(closest-side, rgba(142, 228, 182, 0.28), rgba(142, 228, 182, 0) 100%);
+
+  --logo-back: var(--accent-strong);
+  --logo-front: var(--accent);
+  --logo-overlap: var(--accent-soft);
+
+  /* Beam diagram */
+  --node: var(--paper);
+  --node-line: var(--border);
+  --hub: var(--paper); /* the Blend node behind the logo mark */
+  --hub-line: var(--border);
+  --hub-shadow: 0 12px 36px -12px color-mix(in srgb, var(--ink) 28%, transparent);
+  --beam: var(--accent-line);
+  --beam-track: var(--muted);
+}
+
+/* ------------------------------------------------------------------------------------------
+ * KINETIC: tangerine blocks, white page, acid-lime details.
+ *
+ * WCAG contrast: ink on orange 5.42 · white on orange 3.56 (large text only) ·
+ * ink on lime 16.4 · lime on ink 16.4 · accent-strong (#B33A00) on white 5.96 ·
+ * body on white 10.2 · muted on white 5.2 / surface 4.8 · lime on orange 3.03 (shapes only).
+ * Never: lime text on white (1.2), white small text on orange, lime body text.
+ * ---------------------------------------------------------------------------------------- */
+:root[data-theme="kinetic"] {
+  /* Core */
+  --bg: #fcffff;
+  --surface: #f2f5f5;
+  --ink: #0b0b0b;
+  --muted: #6b6b6b;
+  --accent: #c8fd03;
+  --accent-strong: #b33a00;
+  --accent-soft: #c8fd03;
+  --on-accent: #0b0b0b;
+  --border: #e3e7e7;
+
+  /* Extended palette */
+  --paper: #fcffff;
+  --body: #434343;
+  --accent-hover: #b6e600;
+  --accent-tint: #fff0e6;
+  --brand: #ee5001;
+  --on-brand: #fcffff; /* headlines only: 3.56:1 */
+  --deep: #0b0b0b;
+  --on-deep: #fcffff;
+  --expiring: #b45309;
+  --expiring-tint: #fef3e2;
+  --destructive: #b42318;
+
+  /* Roles */
+  --focus: var(--accent-strong);
+  --accent-line: var(--brand); /* lime would vanish on white, so light-background lines are orange */
+  --glow-hero: radial-gradient(closest-side, color-mix(in srgb, #fcffff 22%, transparent), transparent);
+  --glow-steps: radial-gradient(closest-side, color-mix(in srgb, #ee5001 14%, transparent), transparent 100%);
+  --glow-footer: radial-gradient(closest-side, color-mix(in srgb, #ee5001 22%, transparent), color-mix(in srgb, #fff0e6 80%, transparent) 55%, transparent 100%);
+  --selection-bg: var(--accent);
+  --selection-ink: var(--ink);
+
+  --button: var(--ink);
+  --button-ink: var(--paper);
+  --button-hover: color-mix(in srgb, var(--ink) 85%, var(--paper));
+  --button-ring: var(--accent);
+
+  --hero: var(--brand);
+  --hero-ink: var(--on-brand);
+  --marker-ink: var(--ink); /* the marked phrase reads ink-on-lime, never white-on-lime */
+  --marker-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath fill='%23C8FD03' d='M7 24C58 13 141 19 214 15C282 11 349 9 393 17C398 39 396 66 391 85C322 93 241 87 163 91C104 94 47 91 9 89C4 68 3 45 7 24Z'/%3E%3Cpath fill='%23A6D400' fill-opacity='0.45' d='M18 80C140 85 268 81 388 75L389 83C270 90 140 93 17 87Z'/%3E%3C/svg%3E");
+
+  --banner: var(--brand);
+  --banner-ink: var(--on-brand);
+  --banner-accent: var(--ink);
+  --banner-line: var(--brand);
+  --banner-glow: radial-gradient(closest-side, color-mix(in srgb, #fcffff 16%, transparent), transparent 100%);
+  --banner-glow-2: radial-gradient(closest-side, color-mix(in srgb, #c8fd03 28%, transparent), transparent 100%);
+
+  --logo-back: #b33a00;
+  --logo-front: #c8fd03;
+  --logo-overlap: #fcffff;
+
+  /* Beam diagram on light backgrounds: the mark sits on an orange disc so the lime tile shows. */
+  --node: var(--paper);
+  --node-line: var(--border);
+  --hub: var(--brand);
+  --hub-line: var(--brand);
+  --hub-shadow: 0 12px 36px -12px color-mix(in srgb, var(--ink) 28%, transparent);
+  --beam: var(--accent-line);
+  --beam-track: var(--muted);
+}
+
+/* Orange surfaces (hero, and the nav while it sits on the hero): small text goes ink. */
+:root[data-theme="kinetic"] [data-surface="hero"],
+:root[data-theme="kinetic"] [data-surface="nav-hero"] {
+  --body: var(--ink);
+  --muted: var(--ink);
+  --focus: var(--ink);
+}
+
+/* Hero beam: lime pulses, white track, the mark straight on the orange. */
+:root[data-theme="kinetic"] [data-surface="hero"] {
+  --node-line: transparent;
+  --hub: var(--brand);
+  --hub-line: transparent;
+  --hub-shadow: none;
+  --beam: var(--accent);
+  --beam-track: var(--paper);
+}
