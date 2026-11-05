@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useInView } from "motion/react";
-import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { AnimatedList } from "@/components/ui/animated-list";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { ParcelArt } from "@/components/visuals/ParcelArt";
@@ -12,6 +12,29 @@ import { cn } from "@/lib/utils";
 const DROP = 2000;
 /** ms from a label mounting to the stamp: ~0.4s spring landing + 1.2s as a problem. */
 const STAMP_AFTER = 1600;
+
+/*
+ * The stamp gets its own slot in the label row, between the text and the barcode, so it
+ * never covers either. SLOT is the slot's width; STAMP_RIGHT is the slot's right edge
+ * measured from the outside of the label: bezel border 1 + padding 4 + gradient border 1
+ * + row padding 14 + barcode 18 + gap 12.
+ */
+const SLOT = 92;
+const STAMP_RIGHT = 50;
+
+/** Phones show three labels instead of four. */
+const PHONE = "(max-width: 639px)";
+function usePhone() {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia(PHONE);
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(PHONE).matches,
+    () => false,
+  );
+}
 
 type Claim = (typeof hero.claims)[number];
 
@@ -45,7 +68,7 @@ const BARS_WIDTH = BARS[BARS.length - 1].x + BARS[BARS.length - 1].w;
 
 function Barcode() {
   return (
-    <svg viewBox={`0 0 ${BARS_WIDTH} 1`} preserveAspectRatio="none" className="h-12 w-6 shrink-0 self-center fill-ink/70">
+    <svg viewBox={`0 0 ${BARS_WIDTH} 1`} preserveAspectRatio="none" className="h-11 w-[18px] shrink-0 self-center fill-ink/70">
       {BARS.map((b, i) => (
         <rect key={i} x={b.x} y={0} width={b.w} height={1} />
       ))}
@@ -75,9 +98,9 @@ function ClaimLabel({ claim }: { claim: Claim }) {
         <div style={notches(5, 0)} className="relative rounded-lg bg-(image:--bezel-border) p-px">
           <div
             style={notches(6, -1)}
-            className="flex items-stretch gap-3.5 rounded-[7px] bg-white py-3.5 pl-5 pr-4 text-ink shadow-[inset_0_1px_0_var(--bezel-highlight)]"
+            className="flex items-stretch gap-3 rounded-[7px] bg-white py-3.5 pl-4 pr-3.5 text-ink shadow-[inset_0_1px_0_var(--bezel-highlight)]"
           >
-            <div className="size-10 shrink-0 self-center">
+            <div className="size-9 shrink-0 self-center">
               <ParcelArt damaged={claim.damaged} />
             </div>
             <div className="min-w-0 flex-1">
@@ -93,8 +116,10 @@ function ClaimLabel({ claim }: { claim: Claim }) {
                 {claim.status}
               </motion.span>
               <p className="mt-1.5 truncate text-[15px] font-semibold leading-snug">{claim.title}</p>
-              <p className="truncate text-[13px] leading-snug text-muted-foreground">{claim.detail}</p>
+              <p className="line-clamp-2 text-[13px] leading-snug text-muted-foreground">{claim.detail}</p>
             </div>
+            {/* Empty slot the stamp lands in (the stamp itself sits outside the mask and shadow). */}
+            <div style={{ width: SLOT }} className="shrink-0" />
             <Barcode />
           </div>
 
@@ -114,7 +139,10 @@ function ClaimLabel({ claim }: { claim: Claim }) {
       </div>
 
       {/* The stamp: drops from 1.4x, a small bounce, ~85% like ink. */}
-      <div className="pointer-events-none absolute inset-y-0 right-8 flex items-center pt-1">
+      <div
+        style={{ width: SLOT, right: STAMP_RIGHT }}
+        className="pointer-events-none absolute inset-y-0 flex items-center justify-center"
+      >
         <motion.div
           initial={false}
           animate={stamped ? { opacity: 0.85, scale: 1 } : { opacity: 0, scale: 1.4 }}
@@ -124,7 +152,7 @@ function ClaimLabel({ claim }: { claim: Claim }) {
               : { duration: 0 }
           }
           style={{ rotate: stampTilt }}
-          className="rounded-[4px] border-[2.5px] border-stamp px-2 py-1 text-[15px] font-extrabold uppercase leading-none tracking-[0.12em] text-stamp"
+          className="rounded-[4px] border-2 border-stamp px-1.5 py-1 text-[13px] font-extrabold uppercase leading-none tracking-[0.1em] text-stamp"
         >
           {hero.stamp}
         </motion.div>
@@ -136,28 +164,29 @@ function ClaimLabel({ claim }: { claim: Claim }) {
 /**
  * Hero visual: problems land one at a time as shipping labels in a loose pile (Magic UI
  * Animated List, newest on top), each stamped CLAIMED ~1.2s after landing. Four on
- * screen, the oldest fades out at the bottom, loops forever, and holds still while the
- * hero is off screen.
+ * screen (three at 90% on phones, so the whole hero fits the first screen), the oldest
+ * fades out at the bottom, loops forever, and holds still while the hero is off screen.
  *
  * Decorative: the loop would be noise to a screen reader, and the hero copy says it.
  */
 export function ClaimStack() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { amount: 0.2 });
+  const phone = usePhone();
 
   return (
     <div ref={ref} aria-hidden="true" className="relative">
       <div className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[125%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-(image:--glow-hero)" />
       {/*
-       * Fixed height (4 labels, overlapping a few px) so the hero never moves while the
-       * pile cycles. Side padding leaves room for the tilt. Newer labels sit above older
-       * ones (z-index by position).
+       * Fixed height (4 labels, or 3 on phones, overlapping a few px) so the hero never
+       * moves while the pile cycles. Side padding leaves room for the tilt. Newer labels
+       * sit above older ones (z-index by position). Phones zoom the pile to 90%.
        */}
-      <div className="relative -mx-4 h-[27.5rem] overflow-hidden px-4 pt-3 [mask-image:linear-gradient(to_bottom,#000_84%,transparent)] sm:mx-auto sm:max-w-[400px] sm:px-5">
+      <div className="relative -mx-4 h-[21.5rem] overflow-hidden px-4 pt-3 [mask-image:linear-gradient(to_bottom,#000_84%,transparent)] max-sm:[zoom:0.9] sm:mx-auto sm:h-[27.5rem] sm:max-w-[440px] sm:px-5">
         <AnimatedList
           delay={DROP}
           loop
-          max={4}
+          max={phone ? 3 : 4}
           paused={!inView}
           className="gap-0 [&>*]:relative [&>*+*]:-mt-1.5 [&>*:nth-child(1)]:z-[5] [&>*:nth-child(2)]:z-[4] [&>*:nth-child(3)]:z-[3] [&>*:nth-child(4)]:z-[2] [&>*:nth-child(5)]:z-[1]"
         >

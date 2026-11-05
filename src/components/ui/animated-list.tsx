@@ -11,10 +11,24 @@ import { AnimatePresence, motion, type MotionProps } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
-export function AnimatedListItem({ children }: { children: React.ReactNode }) {
+/** How a new item arrives: grow from nothing (Magic UI default) or a short drop and fade. */
+export type AnimatedListEnter = "scale" | "drop"
+
+const ENTER: Record<AnimatedListEnter, MotionProps["initial"]> = {
+  scale: { scale: 0, opacity: 0 },
+  drop: { y: -10, scale: 0.98, opacity: 0 },
+}
+
+export function AnimatedListItem({
+  children,
+  enter = "scale",
+}: {
+  children: React.ReactNode
+  enter?: AnimatedListEnter
+}) {
   const animations: MotionProps = {
-    initial: { scale: 0, opacity: 0 },
-    animate: { scale: 1, opacity: 1, originY: 0 },
+    initial: ENTER[enter],
+    animate: { y: 0, scale: 1, opacity: 1, originY: 0 },
     // Fade only, so the oldest item (pushed to the bottom) fades out in place.
     exit: { opacity: 0, transition: { duration: 0.35 } },
     transition: { type: "spring", stiffness: 350, damping: 40 },
@@ -39,6 +53,8 @@ export interface AnimatedListProps extends ComponentPropsWithoutRef<"div"> {
   paused?: boolean
   /** Called with how many items have dropped in so far (1, 2, 3, ...). */
   onItem?: (dropped: number) => void
+  /** Entrance for each new item (default "scale"). */
+  enter?: AnimatedListEnter
 }
 
 /**
@@ -55,6 +71,7 @@ export const AnimatedList = React.memo(
     max,
     paused = false,
     onItem,
+    enter,
     ...props
   }: AnimatedListProps) => {
     const childrenArray = useMemo(
@@ -98,7 +115,9 @@ export const AnimatedList = React.memo(
       >
         <AnimatePresence>
           {itemsToShow.map(({ key, item }) => (
-            <AnimatedListItem key={key}>{item}</AnimatedListItem>
+            <AnimatedListItem key={key} enter={enter}>
+              {item}
+            </AnimatedListItem>
           ))}
         </AnimatePresence>
       </div>

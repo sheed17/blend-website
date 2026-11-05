@@ -117,7 +117,7 @@ export const whyUnclaimed = {
 
 export const howItWorks = {
   headline: "How it works.",
-  /** Title of each step's task-feed card, and the item that lands on top at the end. */
+  /** Title of each step's task-feed card, and the item that lands at the bottom at the end. */
   diyLabel: "Doing it yourself",
   diyDone: "Blend does this.",
   /** Large line after the three steps. */
@@ -163,10 +163,6 @@ export const howItWorks = {
   ],
 } as const;
 
-export const banner = {
-  lines: ["Lost money doesn’t vanish.", "It waits to be claimed."],
-} as const;
-
 export const outcomes = {
   headline: "What changes.",
   cards: [
@@ -190,7 +186,7 @@ export const vision = {
   note: "Lost and damaged shipments across every carrier you use, then retail deductions, then the rest of the back office.",
 } as const;
 
-/** Scroll-expanding video between How it works and the banner. */
+/** Scroll-expanding video between How it works and What changes. */
 export const expandVideo = {
   line: "Every package leaves a paper trail.",
 } as const;

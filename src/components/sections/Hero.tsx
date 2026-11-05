@@ -10,14 +10,14 @@ import { CONTACT_HREF } from "@/lib/site";
 /*
  * Three grid items so the claim stack can sit in the middle on phones:
  *   phones:  headline + subline → claim stack → buttons (stack on the first screen)
- *   lg+:     headline + subline / buttons stacked in 7 columns, stack spanning both
- *            rows in the other 5.
+ *   lg+:     headline + subline / buttons stacked on the left, the stack (440px, the
+ *            labels' full width) spanning both rows on the right.
  */
 export function Hero() {
   return (
     <section data-surface="hero" className="relative overflow-hidden bg-hero pb-24 pt-10 md:pb-32 md:pt-24 lg:min-h-[calc(100svh-72px)] lg:pt-28">
-      <Container className="relative grid items-center gap-y-6 sm:gap-y-10 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-0">
-        <div className="min-w-0 lg:col-span-7 lg:self-end">
+      <Container className="relative grid items-center gap-y-6 sm:gap-y-10 lg:grid-cols-[minmax(0,1fr)_27.5rem] lg:gap-x-12 lg:gap-y-0">
+        <div className="min-w-0 lg:self-end">
           <Reveal>
             <h1 className="text-balance text-[clamp(2.75rem,6vw,6rem)] font-semibold leading-[0.95] tracking-headline text-hero-ink">
               {/* Space kept inside the same text node so copied/extracted text reads "commerce leaves". */}
@@ -32,11 +32,11 @@ export function Hero() {
           </Reveal>
         </div>
 
-        <Reveal delay={0.25} className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
+        <Reveal delay={0.25} className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
           <ClaimStack />
         </Reveal>
 
-        <Reveal delay={0.12} className="min-w-0 lg:col-span-7 lg:self-start lg:pt-10">
+        <Reveal delay={0.12} className="min-w-0 lg:self-start lg:pt-10">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
             <PillButton href={CONTACT_HREF}>{site.contactLabel}</PillButton>
             <Link

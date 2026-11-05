@@ -1,10 +1,10 @@
 "use client";
 
-import { CircleHelp, Tag, Workflow, type LucideIcon } from "lucide-react";
-import { motion } from "motion/react";
+import { Menu, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { Container } from "@/components/primitives/Container";
 import { PillButton } from "@/components/primitives/PillButton";
@@ -13,34 +13,28 @@ import { goToFaq, type FaqTarget } from "@/lib/faq-nav";
 import { CONTACT_HREF } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-type LinkId = (typeof nav.links)[number]["id"];
+type NavLink = (typeof nav.links)[number];
+type LinkId = NavLink["id"];
 
 const FOCUS = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-/** Phone icons for the pill (text from sm up). */
-const ICONS: Record<LinkId, LucideIcon> = { how: Workflow, pricing: Tag, faq: CircleHelp };
-
 /**
- * Frosted glass in the cards' bezel: outer frame + inner pill with the gradient border,
- * page background at 75% and a backdrop blur. `off` keeps the size but drops the glass.
+ * Frosted glass in the cards' bezel: outer frame + inner card with the gradient border,
+ * page background at 75% and a backdrop blur. Pill by default; pass --bezel-r to change.
  */
-function Glass({ children, off = false, className, innerClassName }: {
+function Glass({ children, className, innerClassName }: {
   children: ReactNode;
-  off?: boolean;
   className?: string;
   innerClassName?: string;
 }) {
   return (
     <div
       className={cn(
-        "bezel [--bezel-bg:color-mix(in_srgb,var(--bg)_75%,transparent)] [--bezel-r:9999px]",
-        off ? "border-transparent bg-transparent" : "backdrop-blur-md",
+        "bezel backdrop-blur-md [--bezel-bg:color-mix(in_srgb,var(--bg)_75%,transparent)] [--bezel-r:9999px]",
         className,
       )}
     >
-      <div className={cn("bezel-card flex items-center", off && "border-transparent bg-none shadow-none", innerClassName)}>
-        {children}
-      </div>
+      <div className={cn("bezel-card flex items-center", innerClassName)}>{children}</div>
     </div>
   );
 }
@@ -66,15 +60,15 @@ function Lamp() {
 }
 
 /**
- * Sticky top bar, 64px tall, with three floating pieces: logo (left), a frosted
- * tubelight pill of links (center, 12px from the top) and "Get in touch" (right).
+ * Sticky top bar, 64px tall. Logo (left, plain), a frosted tubelight pill of links
+ * (center, 12px from the top) and "Get in touch" (right).
  *
  * Lit link: hover wins; otherwise "How it works" on /how-it-works, and on the home page
  * "FAQ" while the Questions section is in view ("Pricing" if that's how you got there).
  * Pricing and FAQ scroll on the home page and land there from other pages.
  *
- * The logo gets its own glass chip once the page scrolls, so it stays legible over the
- * dark sections. Phones: icons in the pill, compact button; nothing wraps at 390px.
+ * Phones (<640px): logo and a pill holding one menu button, which opens a frosted panel
+ * with the links as text and "Get in touch".
  */
 export function Nav() {
   const pathname = usePathname();
@@ -83,6 +77,9 @@ export function Nav() {
   const [inFaq, setInFaq] = useState(false);
   const [faqTab, setFaqTab] = useState<FaqTarget>("faq");
   const [hover, setHover] = useState<LinkId | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const header = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -110,6 +107,35 @@ export function Nav() {
     };
   }, [home]);
 
+  // Menu: closes on a new page, Escape (focus back to the button), a tap outside the
+  // bar, or the window growing past the phone layout.
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
+    setMenuOpen(false);
+  }
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMenuOpen(false);
+      menuButton.current?.focus();
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (!header.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const wide = window.matchMedia("(min-width: 640px)");
+    const onWide = () => wide.matches && setMenuOpen(false);
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    wide.addEventListener("change", onWide);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+      wide.removeEventListener("change", onWide);
+    };
+  }, [menuOpen]);
+
   const active: LinkId | null = home
     ? inFaq
       ? faqTab
@@ -123,63 +149,120 @@ export function Nav() {
   // surface (transparent in green, orange in kinetic; see [data-surface] in theme.css).
   const overHero = home && !scrolled;
 
+  const linkProps = (link: NavLink) => {
+    const target = "target" in link ? link.target : null;
+    const isActive = active === link.id;
+    return {
+      href: link.href,
+      "aria-current": isActive ? (target ? ("location" as const) : ("page" as const)) : undefined,
+      onClick: (e: MouseEvent<HTMLAnchorElement>) => {
+        setMenuOpen(false);
+        if (!target) return;
+        setFaqTab(target);
+        if (!home) return; // Next navigates to /#…; the FAQ picks the hash up.
+        e.preventDefault();
+        window.history.replaceState(null, "", `#${target}`);
+        goToFaq(target);
+      },
+    };
+  };
+
   return (
     <header
+      ref={header}
       data-surface={overHero ? "nav-hero" : undefined}
       className={cn("sticky top-0 z-50 h-16", overHero && "bg-hero")}
     >
-      <Container className="grid h-full grid-cols-[1fr_auto_1fr] items-center gap-2 pt-3">
-        <Glass off={!scrolled} className="-ml-3 justify-self-start sm:-ml-3.5" innerClassName="h-[42px] px-1.5 sm:px-2">
-          <Link href="/" aria-label="Blend, home" className={cn("rounded-full text-xl text-ink sm:text-[1.45rem]", FOCUS)}>
-            <Logo />
-          </Link>
-        </Glass>
+      <Container className="grid h-full grid-cols-[1fr_auto] items-center gap-2 pt-3 sm:grid-cols-[1fr_auto_1fr]">
+        <Link
+          href="/"
+          aria-label="Blend, home"
+          className={cn("justify-self-start rounded-full text-xl text-ink sm:text-[1.45rem]", FOCUS)}
+        >
+          <Logo />
+        </Link>
 
-        <nav aria-label="Main" onMouseLeave={() => setHover(null)}>
+        <nav aria-label="Main" onMouseLeave={() => setHover(null)} className="max-sm:hidden">
           <Glass innerClassName="gap-0.5 p-1">
-            {nav.links.map((link) => {
-              const Icon = ICONS[link.id];
-              const target = "target" in link ? link.target : null;
-              const isActive = active === link.id;
-              return (
-                <Link
-                  key={link.id}
-                  href={link.href}
-                  aria-current={isActive ? (target ? "location" : "page") : undefined}
-                  onMouseEnter={() => setHover(link.id)}
-                  onFocus={() => setHover(link.id)}
-                  onBlur={() => setHover(null)}
-                  onClick={(e) => {
-                    if (!target) return;
-                    setFaqTab(target);
-                    if (!home) return; // Next navigates to /#…; the FAQ picks the hash up.
-                    e.preventDefault();
-                    window.history.replaceState(null, "", `#${target}`);
-                    goToFaq(target);
-                  }}
-                  className={cn(
-                    "relative rounded-full px-2.5 py-2 text-sm font-medium transition-colors duration-150 sm:px-4 sm:py-1.5",
-                    lit === link.id ? "text-ink" : "text-ink/65 hover:text-ink",
-                    FOCUS,
-                  )}
-                >
-                  {lit === link.id && <Lamp />}
-                  <Icon aria-hidden="true" strokeWidth={1.9} className="relative size-[18px] sm:hidden" />
-                  <span className="relative max-sm:sr-only">{link.label}</span>
-                </Link>
-              );
-            })}
+            {nav.links.map((link) => (
+              <Link
+                key={link.id}
+                {...linkProps(link)}
+                onMouseEnter={() => setHover(link.id)}
+                onFocus={() => setHover(link.id)}
+                onBlur={() => setHover(null)}
+                className={cn(
+                  "relative rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-150",
+                  lit === link.id ? "text-ink" : "text-ink/65 hover:text-ink",
+                  FOCUS,
+                )}
+              >
+                {lit === link.id && <Lamp />}
+                <span className="relative">{link.label}</span>
+              </Link>
+            ))}
           </Glass>
         </nav>
 
-        <PillButton
-          href={CONTACT_HREF}
-          size="sm"
-          className="justify-self-end whitespace-nowrap max-sm:gap-0 max-sm:pl-3.5 max-sm:pr-3.5 max-sm:text-[13px] max-sm:[&>svg]:hidden"
-        >
+        <PillButton href={CONTACT_HREF} size="sm" className="justify-self-end whitespace-nowrap max-sm:hidden">
           {site.contactLabel}
         </PillButton>
+
+        <Glass className="justify-self-end sm:hidden" innerClassName="p-1">
+          <button
+            ref={menuButton}
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((o) => !o)}
+            className={cn("grid size-9 place-items-center rounded-full text-ink transition-colors hover:bg-mint/25", FOCUS)}
+          >
+            {menuOpen ? (
+              <X aria-hidden="true" strokeWidth={1.9} className="size-5" />
+            ) : (
+              <Menu aria-hidden="true" strokeWidth={1.9} className="size-5" />
+            )}
+          </button>
+        </Glass>
       </Container>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            key="menu"
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.15 } }}
+            transition={{ type: "spring", stiffness: 420, damping: 34 }}
+            className="absolute inset-x-4 top-full origin-top pt-2 sm:hidden"
+          >
+            <Glass
+              className="bg-[color-mix(in_srgb,var(--ink)_3%,var(--bg))] [--bezel-bg:var(--bg)] [--bezel-r:1.25rem]"
+              innerClassName="flex-col items-stretch p-2"
+            >
+              <nav id="mobile-menu" aria-label="Main" className="flex flex-col">
+                {nav.links.map((link) => (
+                  <Link
+                    key={link.id}
+                    {...linkProps(link)}
+                    className={cn(
+                      "rounded-xl px-3 py-3 text-lg font-medium transition-colors",
+                      active === link.id ? "bg-mint/25 text-ink" : "text-ink/80 hover:bg-ink/5 hover:text-ink",
+                      FOCUS,
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+              <PillButton href={CONTACT_HREF} className="mt-2 justify-center">
+                {site.contactLabel}
+              </PillButton>
+            </Glass>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

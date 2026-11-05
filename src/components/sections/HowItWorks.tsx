@@ -99,9 +99,10 @@ function TaskRow({ task, seed, crossed, delay }: { task: Task; seed: number; cro
 
 /**
  * "Doing it yourself": once the card is in view, the manual work behind a step drops in
- * one row at a time (Magic UI Animated List, newest on top), with a counter in the
- * header. ~500ms after the last one lands, each row is crossed off top to bottom, then
- * "Blend does this." drops in on top. The crossed-off rows stay, faded. Runs once.
+ * one row at a time (Magic UI Animated List, newest on top), with the full task count in
+ * the header. ~500ms after the last one lands, each row is crossed off top to bottom,
+ * then "Blend does this." lands at the bottom, closing the card. The crossed-off rows
+ * stay, faded. Runs once.
  *
  * An invisible copy of the final layout sits in the same grid cell as the animation, so
  * the card is exactly as tall as its finished content from the start and nothing below
@@ -132,7 +133,7 @@ function DiyFeed({ tasks, seed }: { tasks: readonly Task[]; seed: number }) {
         <div className="flex items-baseline justify-between gap-4 text-sm font-semibold text-ink/60">
           <p>{howItWorks.diyLabel}</p>
           <p aria-hidden="true" className="tabular-nums">
-            {landed} {landed === 1 ? "task" : "tasks"}
+            {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
           </p>
         </div>
 
@@ -148,24 +149,38 @@ function DiyFeed({ tasks, seed }: { tasks: readonly Task[]; seed: number }) {
         <div aria-hidden="true" className="mt-4 grid">
           {/* Sizer: the finished layout, invisible. */}
           <div className="invisible col-start-1 row-start-1 flex flex-col gap-2.5">
-            <div className={DONE_FRAME}>
-              <div className={DONE}>
-                <DoneBody />
-              </div>
-            </div>
             {tasks.map((t) => (
               <div key={t.task} className={ROW}>
                 <RowBody task={t} />
               </div>
             ))}
+            <div className={DONE_FRAME}>
+              <div className={DONE}>
+                <DoneBody />
+              </div>
+            </div>
           </div>
 
           <div className="col-start-1 row-start-1 flex flex-col gap-2.5 self-start">
+            {on && (
+              <AnimatedList delay={DROP} onItem={setLanded} enter="drop" className="gap-2.5">
+                {tasks.map((t, i) => (
+                  <TaskRow
+                    key={t.task}
+                    task={t}
+                    seed={seed + i}
+                    crossed={phase !== "drop"}
+                    // Top to bottom: the newest task is on top.
+                    delay={((tasks.length - 1 - i) * STAGGER) / 1000}
+                  />
+                ))}
+              </AnimatedList>
+            )}
             <AnimatePresence>
               {phase === "done" && (
                 <motion.div
                   key="blend"
-                  initial={{ opacity: 0, y: -16, scale: 0.97 }}
+                  initial={{ opacity: 0, y: 12, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ type: "spring", stiffness: 340, damping: 28 }}
                   className={DONE_FRAME}
@@ -192,22 +207,6 @@ function DiyFeed({ tasks, seed }: { tasks: readonly Task[]; seed: number }) {
                 </motion.div>
               )}
             </AnimatePresence>
-            {on && (
-              <motion.div layout="position" transition={{ type: "spring", stiffness: 340, damping: 32 }}>
-                <AnimatedList delay={DROP} onItem={setLanded} className="gap-2.5">
-                  {tasks.map((t, i) => (
-                    <TaskRow
-                      key={t.task}
-                      task={t}
-                      seed={seed + i}
-                      crossed={phase !== "drop"}
-                      // Top to bottom: the newest task is on top.
-                      delay={((tasks.length - 1 - i) * STAGGER) / 1000}
-                    />
-                  ))}
-                </AnimatedList>
-              </motion.div>
-            )}
           </div>
         </div>
       </div>

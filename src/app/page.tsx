@@ -1,4 +1,3 @@
-import { Banner } from "@/components/sections/Banner";
 import { Belief } from "@/components/sections/Belief";
 import { Facts } from "@/components/sections/Facts";
 import { Faq } from "@/components/sections/Faq";
@@ -19,7 +18,6 @@ export default function Home() {
       <WhyUnclaimed />
       <HowItWorks />
       <ScrollExpandVideo />
-      <Banner />
       <Outcomes />
       <Vision />
       <Team />
