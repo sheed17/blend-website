@@ -32,7 +32,7 @@ export function Hero() {
                 {hero.secondaryCta}
                 <ArrowDown
                   aria-hidden="true"
-                  className="size-4 transition-transform motion-safe:group-hover:translate-y-0.5"
+                  className="size-4 transition-transform group-hover:translate-y-0.5"
                 />
               </Link>
             </div>

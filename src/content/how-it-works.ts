@@ -13,7 +13,7 @@ export const howItWorksPage = {
 
   claims: {
     id: "claims",
-    headline: "Claims and disputes",
+    headline: "Claims",
     intro:
       "When a carrier loses or damages a package, the shipper is owed money. For a 3PL, that’s you, on behalf of the brand that owned the goods.",
 
@@ -22,7 +22,6 @@ export const howItWorksPage = {
       items: [
         "Lost packages. Tracking stops moving, or the carrier marks it lost.",
         "Damaged packages and missing contents.",
-        "Denied and underpaid claims. We dispute them.",
       ],
       after: "On every carrier you ship with: UPS, FedEx, USPS, DHL, OnTrac, and regionals.",
     },
@@ -53,7 +52,7 @@ export const howItWorksPage = {
 
     afterWeFile: {
       headline: "After we file",
-      text: "The carrier reviews it, usually within a few weeks. If they approve, the money goes straight to your account; it never passes through Blend. If they deny or underpay, we find the reason and file again with what was missing. If the carrier is right, we close it and tell you why.",
+      text: "The carrier reviews it, usually within a few weeks. If they approve, the money goes straight to your account; it never passes through Blend. If the carrier asks for more information or a missing document, we send it. You owe nothing on claims the carrier denies.",
     },
   },
 

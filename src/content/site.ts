@@ -145,7 +145,7 @@ export const faq = {
     { q: "How do our brands get the money?", a: "Carriers pay you directly. You credit each brand on your monthly statement." },
     {
       q: "What if a claim is denied?",
-      a: "We find out why. If the carrier is wrong, we dispute it. You owe nothing on denied claims.",
+      a: "You owe nothing. If it was denied for a missing document, we send it and resubmit.",
     },
     { q: "How long does setup take?", a: "About an hour of your time. First claims are filed within a week." },
   ],
@@ -162,6 +162,7 @@ export const team = {
 } as const;
 
 export const footer = {
-  tagline: "Nothing left on the table.",
+  /** Closing line. Each entry is one line on mobile; it runs together from sm up. */
+  tagline: ["Nothing", "left on", "the table."],
   links: [...nav.links, { label: "Privacy", href: "/privacy" }],
 } as const;

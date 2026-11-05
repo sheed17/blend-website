@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { Container } from "@/components/primitives/Container";
 import { banner } from "@/content/site";
@@ -17,9 +17,10 @@ export function Banner({
   lines?: readonly string[];
   visual?: ReactNode;
 }) {
-  const reduce = useReducedMotion();
-  const drift = (x: string[], y: string[], duration: number) =>
-    reduce ? {} : { animate: { x, y }, transition: { duration, ease: "easeInOut" as const, repeat: Infinity } };
+  const drift = (x: string[], y: string[], duration: number) => ({
+    animate: { x, y },
+    transition: { duration, ease: "easeInOut" as const, repeat: Infinity },
+  });
 
   return (
     <section

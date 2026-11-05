@@ -1,6 +1,5 @@
 "use client";
 
-import { useReducedMotion } from "framer-motion";
 import { Mail, Package, PackageX, ScanBarcode, Truck, type LucideIcon } from "lucide-react";
 import { createRef, useMemo, useRef, type RefObject } from "react";
 import { LogoMark } from "@/components/brand/LogoMark";
@@ -16,7 +15,6 @@ import { cn } from "@/lib/utils";
  * - No `step`: hero mode. Every signal pulses into Blend; Blend pulses to "$".
  * - `step` 0 / 1 / 2 (How it works): 0 highlights one signal, 1 sends it into
  *   Blend, 2 sends the money on to "$".
- * With prefers-reduced-motion, paths render static with no traveling pulse.
  */
 
 /** Same order as beam.signals in site.ts. */
@@ -144,8 +142,6 @@ export function BeamDiagram({
   size?: Size;
   className?: string;
 }) {
-  const reduce = useReducedMotion() ?? false;
-  const animated = !reduce;
   const hero = step === undefined;
   const s = SIZES[size];
 
@@ -230,9 +226,9 @@ export function BeamDiagram({
       {hero ? (
         <>
           {signalRefs.map((r, i) => (
-            <Pulse key={i} containerRef={containerRef} fromRef={r} toRef={centerRef} animated={animated} delay={i * STAGGER} />
+            <Pulse key={i} containerRef={containerRef} fromRef={r} toRef={centerRef} animated delay={i * STAGGER} />
           ))}
-          <Pulse containerRef={containerRef} fromRef={centerRef} toRef={moneyRef} animated={animated} delay={0.9} width={3.5} green />
+          <Pulse containerRef={containerRef} fromRef={centerRef} toRef={moneyRef} animated delay={0.9} width={3.5} green />
         </>
       ) : (
         <>
@@ -256,13 +252,13 @@ export function BeamDiagram({
               containerRef={containerRef}
               fromRef={signalRefs[highlight]}
               toRef={centerRef}
-              animated={animated}
+              animated
               green
               done={step === 2}
             />
           )}
           {step === 2 && (
-            <Pulse containerRef={containerRef} fromRef={centerRef} toRef={moneyRef} animated={animated} width={3.5} green />
+            <Pulse containerRef={containerRef} fromRef={centerRef} toRef={moneyRef} animated width={3.5} green />
           )}
         </>
       )}

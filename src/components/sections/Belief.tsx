@@ -13,7 +13,12 @@ export function Belief() {
     <section aria-labelledby="belief" className="grain bg-deep text-on-deep">
       <div className="absolute inset-0 z-0">
         <div className="sticky top-0 h-svh max-h-full">
-          <BackgroundVideo src="/media/belief.mp4" poster="/media/belief-poster.jpg" overlay="bg-(--belief-overlay)" />
+          <BackgroundVideo
+            src="/media/belief.mp4"
+            poster="/media/belief-poster.jpg"
+            fallback="/media/belief-anim.webp"
+            overlay="bg-(--belief-overlay)"
+          />
         </div>
       </div>
       <ScrollTextReveal

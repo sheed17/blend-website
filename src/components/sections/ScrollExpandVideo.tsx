@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, type CSSProperties } from "react";
 import { BackgroundVideo } from "@/components/media/BackgroundVideo";
 import { expandVideo } from "@/content/site";
@@ -13,11 +13,10 @@ import { expandVideo } from "@/content/site";
  *
  * Cheap per frame: only the --p custom property changes; scale and radius are derived
  * in CSS (.expand-card in globals.css), so it's a transform, not a layout change.
- * Reduced motion: no pinning, a static full-width card (poster only) with the line shown.
+ * Runs for every visitor, regardless of prefers-reduced-motion.
  */
 export function ScrollExpandVideo() {
   const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion() ?? false;
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const p = useTransform(scrollYProgress, [0, 0.7], [0, 1]);
   const reveal = useTransform(scrollYProgress, [0.62, 0.82], [0, 1]);
@@ -26,19 +25,19 @@ export function ScrollExpandVideo() {
     <section
       ref={ref}
       aria-labelledby="expand-video-line"
-      className="relative bg-background motion-safe:h-[160svh] motion-safe:md:h-[220svh]"
+      className="relative h-[160svh] bg-background md:h-[220svh]"
     >
-      <div className="relative flex h-[70svh] items-center justify-center overflow-hidden motion-safe:sticky motion-safe:top-0 motion-safe:h-svh">
+      <div className="sticky top-0 flex h-svh items-center justify-center overflow-hidden">
         <motion.div
           className="expand-card absolute inset-0 overflow-hidden bg-ink [--s0:0.85] md:[--s0:0.6]"
-          style={reduce ? undefined : ({ "--p": p } as unknown as CSSProperties)}
+          style={{ "--p": p } as unknown as CSSProperties}
         >
-          <BackgroundVideo src="/media/strip.mp4" poster="/media/strip-poster.jpg" />
-          <motion.div aria-hidden="true" className="absolute inset-0 bg-(--expand-overlay)" style={{ opacity: reduce ? 1 : reveal }} />
+          <BackgroundVideo src="/media/strip.mp4" poster="/media/strip-poster.jpg" fallback="/media/strip-anim.webp" />
+          <motion.div aria-hidden="true" className="absolute inset-0 bg-(--expand-overlay)" style={{ opacity: reveal }} />
         </motion.div>
         <motion.p
           id="expand-video-line"
-          style={{ opacity: reduce ? 1 : reveal }}
+          style={{ opacity: reveal }}
           className="relative mx-4 max-w-[18ch] text-balance text-center text-[clamp(2.25rem,5.5vw,5rem)] font-semibold leading-[1] tracking-headline text-white [text-shadow:0_2px_24px_color-mix(in_srgb,var(--ink)_35%,transparent)]"
         >
           {expandVideo.line}

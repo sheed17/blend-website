@@ -23,7 +23,7 @@ export function PillButton({
   children: ReactNode;
   variant?: keyof typeof variants;
   size?: "sm" | "md";
-  /** Subtle animated Shine Border (theme --shine-a/b). Hidden with reduced motion. Use once. */
+  /** Subtle animated Shine Border (theme --shine-a/b). Use once. */
   shine?: boolean;
   className?: string;
 }) {
@@ -43,14 +43,13 @@ export function PillButton({
           borderWidth={2}
           duration={10}
           shineColor={["var(--shine-a)", "var(--shine-b)"]}
-          className="motion-reduce:hidden"
         />
       )}
       {children}
       <ArrowRight
         aria-hidden="true"
         className={cn(
-          "transition-transform duration-200 motion-safe:group-hover:translate-x-0.5",
+          "transition-transform duration-200 group-hover:translate-x-0.5",
           size === "md" ? "size-[18px]" : "size-4",
         )}
         strokeWidth={2}

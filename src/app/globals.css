@@ -204,13 +204,6 @@
     border-radius: calc(28px * (1 - var(--p)) / var(--s));
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .expand-card {
-      transform: none;
-      border-radius: 0;
-    }
-  }
-
   /*
    * Marker: a hand-drawn highlighter swipe behind the lower ~60% of text.
    * Works across line wraps (each line gets its own swipe).
@@ -225,12 +218,7 @@
     box-decoration-break: clone;
     padding-inline: 0.08em;
     margin-inline: -0.08em;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .marker {
-      animation: marker-draw 0.9s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
+    animation: marker-draw 0.9s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 }
 
@@ -240,8 +228,6 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
+html {
+  scroll-behavior: smooth;
 }

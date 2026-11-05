@@ -92,7 +92,7 @@ export default function HowItWorksPage() {
           </h1>
           <p className="mt-8 max-w-[36ch] text-pretty text-lg leading-relaxed text-body md:text-xl">{page.intro}</p>
 
-          {/* Claims and disputes */}
+          {/* Claims */}
           <section aria-labelledby={claims.id} className="mt-24 md:mt-32">
             <H2 id={claims.id}>{claims.headline}</H2>
             <p className="mt-6 text-lg leading-relaxed text-body md:text-xl">{claims.intro}</p>

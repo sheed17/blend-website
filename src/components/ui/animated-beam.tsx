@@ -26,7 +26,7 @@ export interface AnimatedBeamProps {
   endXOffset?: number
   endYOffset?: number
   /** Blend: colors may be CSS var() strings; they're applied via style, not attributes. */
-  /** Blend addition: false renders the static path only (used for prefers-reduced-motion). */
+  /** Blend addition: false renders the static path only. */
   animated?: boolean
 }
 

@@ -3,7 +3,7 @@
 import { MotionConfig } from "framer-motion";
 import type { ReactNode } from "react";
 
-/** Respect the user's prefers-reduced-motion setting for all animations. */
+/** Animations run for every visitor: prefers-reduced-motion is deliberately ignored. */
 export function MotionProvider({ children }: { children: ReactNode }) {
-  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
+  return <MotionConfig reducedMotion="never">{children}</MotionConfig>;
 }

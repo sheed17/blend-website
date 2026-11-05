@@ -25,14 +25,21 @@ export function Footer() {
 
       <Container className="relative pt-36 text-center md:pt-48">
         <Reveal>
-          {/* Filled with the strip video from 640px up; plain ink below that and with reduced motion. */}
+          {/* Filled with the strip video at every width (animated WebP if autoplay is blocked).
+              Mobile: three very large lines; from sm up it wraps as one balanced line. */}
           <VideoText
             as="p"
             src="/media/strip.mp4"
+            fallback="/media/strip-anim.webp"
             videoClassName="brightness-[0.7] contrast-125 saturate-125"
-            className="mx-auto max-w-[14ch] text-balance text-[clamp(3rem,12vw,12rem)] font-bold leading-[0.9] tracking-headline text-ink"
+            className="mx-auto max-w-[14ch] text-balance text-[clamp(3rem,12vw,12rem)] font-bold leading-[0.9] tracking-headline text-ink max-sm:text-[21vw] max-sm:leading-[0.86]"
           >
-            {footer.tagline}
+            {footer.tagline.map((line, i) => (
+              <span key={line} className="max-sm:block">
+                {i > 0 && " "}
+                {line}
+              </span>
+            ))}
           </VideoText>
           <PillButton href={CONTACT_HREF} shine className="mt-12">
             {site.contactLabel}

@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, useInView, useReducedMotion } from "framer-motion";
+import { animate, useInView } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 /**
@@ -24,22 +24,16 @@ export function CountUp({
   const ref = useRef<HTMLSpanElement>(null);
   const armed = useRef(false);
   const inView = useInView(ref, { once: true, amount: 0.6 });
-  const reduce = useReducedMotion();
 
   // Below the fold on load: reset to zero so there is something to count up from.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (reduce) {
-      el.textContent = String(value);
-      armed.current = false;
-      return;
-    }
     if (el.getBoundingClientRect().top > window.innerHeight) {
       el.textContent = "0";
       armed.current = true;
     }
-  }, [reduce, value]);
+  }, [value]);
 
   useEffect(() => {
     const el = ref.current;

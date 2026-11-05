@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 
 /**
  * Gentle fade-and-rise when scrolled into view. Runs once.
- * With prefers-reduced-motion, MotionConfig drops the movement and keeps the fade.
  */
 export function Reveal({
   children,
