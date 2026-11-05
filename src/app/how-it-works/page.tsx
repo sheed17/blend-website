@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Container } from "@/components/primitives/Container";
 import { PillButton } from "@/components/primitives/PillButton";
+import { SpinningParcel } from "@/components/visuals/SpinningParcel";
 import { howItWorksPage as page } from "@/content/how-it-works";
 import { site } from "@/content/site";
 import { CONTACT_HREF, socialMetadata } from "@/lib/site";
@@ -87,9 +88,13 @@ export default function HowItWorksPage() {
     <div className="pb-28 pt-16 md:pb-40 md:pt-24">
       <Container>
         <div className="max-w-[720px]">
-          <h1 className="text-balance text-[clamp(2.75rem,6vw,5rem)] font-semibold leading-[0.95] tracking-headline text-ink">
-            {page.headline}
-          </h1>
+          {/* Parcel: centered above the H1 on phones, to its right from md up. */}
+          <div className="flex flex-col gap-4 md:flex-row-reverse md:items-center md:justify-between md:gap-10">
+            <SpinningParcel className="shrink-0 self-center" />
+            <h1 className="text-balance text-[clamp(2.75rem,6vw,5rem)] font-semibold leading-[0.95] tracking-headline text-ink">
+              {page.headline}
+            </h1>
+          </div>
           <p className="mt-8 max-w-[36ch] text-pretty text-lg leading-relaxed text-body md:text-xl">{page.intro}</p>
 
           {/* Claims */}

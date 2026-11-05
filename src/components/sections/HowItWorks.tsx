@@ -1,108 +1,109 @@
 "use client";
 
-import { useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
-import { BeamDiagram, StepVisual } from "@/components/visuals/BeamDiagram";
 import { howItWorks } from "@/content/site";
-import { cn } from "@/lib/utils";
 
 type Step = (typeof howItWorks.steps)[number];
 
-function StepBlock({
-  step,
-  index,
-  active,
-  onActive,
-}: {
-  step: Step;
-  index: number;
-  active: boolean;
-  onActive: (i: number) => void;
-}) {
-  const ref = useRef<HTMLLIElement>(null);
-  // "Active" when the step crosses the middle band of the viewport.
-  const inView = useInView(ref, { margin: "-45% 0px -45% 0px" });
-  useEffect(() => {
-    if (inView) onActive(index);
-  }, [inView, index, onActive]);
+/** Seconds between ticks, and before the first one. */
+const TICK = 0.25;
+const FIRST_TICK = 0.2;
+
+/** Empty box that fills and draws a check after `delay` once `on` turns true. Decorative. */
+function Checkbox({ on, delay }: { on: boolean; delay: number }) {
+  return (
+    <span aria-hidden="true" className="relative mt-[0.2em] size-[1.125rem] shrink-0 rounded-[5px] border-[1.5px] border-ink/25">
+      <motion.span
+        className="absolute -inset-[1.5px] rounded-[5px] bg-ink"
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={on ? { opacity: 1, scale: 1 } : undefined}
+        transition={{ delay, duration: 0.18, ease: "easeOut" }}
+      />
+      <svg viewBox="0 0 18 18" className="absolute -inset-[1.5px] size-[calc(100%+3px)]" fill="none">
+        <motion.path
+          d="M4.5 9.4 7.6 12.4 13.5 6"
+          stroke="white"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={on ? { pathLength: 1, opacity: 1 } : undefined}
+          transition={{ delay: delay + 0.08, duration: 0.2, ease: "easeOut" }}
+        />
+      </svg>
+    </span>
+  );
+}
+
+/** "Doing it yourself": the manual steps tick off one by one when the card scrolls into view. */
+function DiyChecklist({ items }: { items: readonly string[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const on = useInView(ref, { once: true, amount: 0.6 });
 
   return (
-    <li ref={ref} className="flex flex-col justify-center py-14 lg:min-h-[75svh] lg:py-0">
-      <div className={cn("border-t pt-8 transition-colors duration-500", active ? "border-ink" : "border-line")}>
+    <div
+      ref={ref}
+      className="rounded-2xl border border-line bg-white p-6 shadow-[0_24px_60px_-40px_color-mix(in_srgb,var(--ink)_25%,transparent)] sm:p-8"
+    >
+      <p className="text-sm font-medium text-muted-foreground">{howItWorks.diyLabel}</p>
+      <ul className="mt-5 space-y-3.5">
+        {items.map((item, i) => (
+          <li key={item} className="flex gap-3 text-base leading-snug text-ink">
+            <Checkbox on={on} delay={FIRST_TICK + i * TICK} />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+      <motion.p
+        className="mt-6 border-t border-line pt-5 text-lg font-semibold text-brand-text"
+        initial={{ opacity: 0, y: 6 }}
+        animate={on ? { opacity: 1, y: 0 } : undefined}
+        transition={{ delay: FIRST_TICK + items.length * TICK + 0.2, duration: 0.4, ease: "easeOut" }}
+      >
+        {howItWorks.diyDone}
+      </motion.p>
+    </div>
+  );
+}
+
+function StepRow({ step }: { step: Step }) {
+  return (
+    <li className="grid gap-10 border-t border-line py-14 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
+      <Reveal className="min-w-0">
         <span className="font-mono text-sm font-medium text-brand-text">{step.number}</span>
-        <h3
-          className={cn(
-            "mt-5 text-[clamp(2.75rem,5.5vw,5rem)] font-semibold leading-none tracking-headline transition-colors duration-500",
-            // Inactive titles stay at 50% ink (≥3:1, passes for large text).
-            active ? "text-ink" : "text-ink lg:text-ink/50",
-          )}
-        >
+        <h3 className="mt-5 text-[clamp(2.75rem,5.5vw,5rem)] font-semibold leading-none tracking-headline text-ink">
           {step.title}
         </h3>
         <p className="mt-6 max-w-[30ch] text-xl leading-snug tracking-[-0.01em] text-ink md:text-2xl">{step.body}</p>
-        <p className="mt-6 max-w-[40ch] text-[15px] leading-relaxed text-body">
-          <span className="font-medium text-ink">Before: </span>
-          {step.before}
-        </p>
-      </div>
-
-      {/* Mobile / tablet: a small static visual of just this step's part of the flow
-          (the full animated diagram is desktop only). */}
-      <div className="mt-10 rounded-3xl bg-surface p-3 sm:p-8 lg:hidden">
-        <div className="overflow-hidden rounded-2xl border border-line bg-white">
-          <StepVisual step={index as 0 | 1 | 2} className="min-h-[168px] px-5 py-10" />
-        </div>
+      </Reveal>
+      <div className="min-w-0 lg:max-w-[520px] lg:justify-self-end lg:w-full">
+        <DiyChecklist items={step.diy} />
       </div>
     </li>
   );
 }
 
-/** Sticky scroll: steps scroll on the left, the matching visual stays pinned on the right. */
 export function HowItWorks() {
-  const [active, setActive] = useState<0 | 1 | 2>(0);
-  const onActive = (i: number) => setActive(i as 0 | 1 | 2);
-
   return (
     <section id="how-it-works" aria-labelledby="how-it-works-title" className="scroll-mt-16 bg-background pb-28 pt-14 md:pb-40 md:pt-20">
       <Container>
         <SectionHeader id="how-it-works-title" headline={howItWorks.headline} />
 
-        <div className="mt-10 grid gap-16 lg:mt-0 lg:grid-cols-2">
-          <ol className="min-w-0">
-            {howItWorks.steps.map((step, i) => (
-              <StepBlock key={step.number} step={step} index={i} active={active === i} onActive={onActive} />
-            ))}
-          </ol>
+        <ol className="mt-10 md:mt-14">
+          {howItWorks.steps.map((step) => (
+            <StepRow key={step.number} step={step} />
+          ))}
+        </ol>
 
-          <div className="hidden lg:block">
-            <div className="sticky top-[12.5svh] flex h-[75svh] items-center">
-              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[2rem] bg-surface p-10">
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -bottom-1/3 left-1/2 aspect-square w-[120%] -translate-x-1/2 rounded-full bg-(image:--glow-steps)"
-                />
-                {/* One persistent diagram: its state follows the active step (no card swapping,
-                    so beam paths stay aligned). */}
-                <div className="relative w-full max-w-[460px] overflow-hidden rounded-2xl border border-line bg-white shadow-[0_30px_80px_-40px_color-mix(in_srgb,var(--ink)_28%,transparent)]">
-                  <BeamDiagram step={active} className="min-h-[380px] px-8 py-10" />
-                </div>
-                <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2" aria-hidden="true">
-                  {howItWorks.steps.map((s, i) => (
-                    <span
-                      key={s.number}
-                      className={cn(
-                        "h-1.5 rounded-full transition-all duration-500",
-                        i === active ? "w-6 bg-accent-line" : "w-1.5 bg-ink/20",
-                      )}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Reveal className="border-t border-line pt-16 lg:pt-24">
+          <p className="max-w-[24ch] text-balance text-[clamp(2rem,4.2vw,3.75rem)] font-semibold leading-[1.05] tracking-headline text-ink">
+            {howItWorks.closing}
+          </p>
+        </Reveal>
       </Container>
     </section>
   );

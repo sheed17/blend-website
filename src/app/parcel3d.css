@@ -1,0 +1,194 @@
+/*
+ * Rotating 3D parcel, pure CSS (ported from the parcel asset sheet, section 2).
+ * Used by src/components/visuals/SpinningParcel.tsx. Plain global classes (prefixed
+ * parcel3d-): the Tailwind Turbopack rule in next.config.ts emits every *.css as
+ * plain CSS, so CSS Modules don't get local class names here.
+ * A kraft box with tape and a shipping label: six faces in a preserve-3d box that
+ * spins slowly while it floats over a soft shadow.
+ *
+ * --s: width / depth of the box. --h: height (box proportions 120 × 84).
+ * The stage is a fixed size so nothing shifts while it spins.
+ */
+.parcel3d {
+  --s: 70px;
+  --h: 49px;
+  --kraft: #d9b98c;
+  --kraft-d: #c49f6e;
+  --kraft-dd: #a9834f;
+  --tape: #efe6d2;
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
+  perspective: 700px;
+}
+
+@media (min-width: 768px) {
+  .parcel3d {
+    --s: 90px;
+    --h: 63px;
+    width: 150px;
+    height: 150px;
+  }
+}
+
+.parcel3d-float {
+  display: grid;
+  place-items: center;
+  animation: parcel3d-float 4s ease-in-out infinite;
+}
+
+.parcel3d-box {
+  position: relative;
+  width: var(--s);
+  height: var(--h);
+  transform-style: preserve-3d;
+  animation: parcel3d-spin 14s linear infinite;
+}
+
+.parcel3d-face {
+  position: absolute;
+  backface-visibility: hidden;
+}
+
+.parcel3d-front,
+.parcel3d-back,
+.parcel3d-left,
+.parcel3d-right {
+  width: var(--s);
+  height: var(--h);
+}
+
+.parcel3d-top,
+.parcel3d-bottom {
+  width: var(--s);
+  height: var(--s);
+  top: calc((var(--h) - var(--s)) / 2);
+}
+
+.parcel3d-front {
+  background: linear-gradient(180deg, var(--kraft), var(--kraft-d));
+  transform: translateZ(calc(var(--s) / 2));
+}
+.parcel3d-back {
+  background: var(--kraft-d);
+  transform: rotateY(180deg) translateZ(calc(var(--s) / 2));
+}
+.parcel3d-right {
+  background: linear-gradient(180deg, var(--kraft-d), var(--kraft-dd));
+  transform: rotateY(90deg) translateZ(calc(var(--s) / 2));
+}
+.parcel3d-left {
+  background: linear-gradient(180deg, var(--kraft-d), var(--kraft-dd));
+  transform: rotateY(-90deg) translateZ(calc(var(--s) / 2));
+}
+.parcel3d-top {
+  background: var(--kraft);
+  transform: rotateX(90deg) translateZ(calc(var(--h) / 2));
+}
+.parcel3d-bottom {
+  background: var(--kraft-dd);
+  transform: rotateX(-90deg) translateZ(calc(var(--h) / 2));
+}
+
+/* Tape */
+.parcel3d-top::after {
+  content: "";
+  position: absolute;
+  left: 44%;
+  width: 12%;
+  top: 0;
+  bottom: 0;
+  background: var(--tape);
+  opacity: 0.9;
+}
+.parcel3d-front::before,
+.parcel3d-back::before {
+  content: "";
+  position: absolute;
+  left: 44%;
+  width: 12%;
+  top: 0;
+  height: 22%;
+  background: var(--tape);
+  opacity: 0.9;
+}
+
+/* Shipping label (scaled to the box) */
+.parcel3d-label {
+  position: absolute;
+  right: 8%;
+  bottom: 12%;
+  width: 38%;
+  height: 36%;
+  padding: 4%;
+  border-radius: 2px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 12%;
+}
+.parcel3d-label i {
+  display: block;
+  height: 10%;
+  border-radius: 1px;
+  background: var(--ink);
+  opacity: 0.75;
+}
+.parcel3d-label i:nth-child(2) {
+  width: 70%;
+}
+.parcel3d-label i:nth-child(3) {
+  width: 85%;
+  height: 18%;
+  opacity: 0.9;
+}
+
+.parcel3d-shadow {
+  width: calc(var(--s) * 1.3);
+  height: calc(var(--s) * 0.15);
+  margin-top: calc(var(--s) * 0.12);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--ink) 18%, transparent), transparent);
+  animation: parcel3d-shadow 4s ease-in-out infinite;
+}
+
+/* Off screen: freeze in place. */
+.parcel3d-paused .parcel3d-float,
+.parcel3d-paused .parcel3d-box,
+.parcel3d-paused .parcel3d-shadow {
+  animation-play-state: paused;
+}
+
+@keyframes parcel3d-spin {
+  from {
+    transform: rotateX(-18deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(-18deg) rotateY(360deg);
+  }
+}
+
+/* The box rises while its shadow tightens, so the two read as one float. */
+@keyframes parcel3d-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes parcel3d-shadow {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(8px) scaleX(0.82);
+    opacity: 0.7;
+  }
+}

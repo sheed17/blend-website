@@ -19,7 +19,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
  * length. Everything stops and unmounts while the diagram is off screen or the tab
  * is hidden, and starts fresh when it comes back.
  *
- * Artwork: parcel, damaged parcel and coin from blend_parcels.html (section 3).
+ * Artwork: parcel, damaged parcel and coin from the parcel asset sheet (beam demo).
  */
 
 type Kind = "normal" | "damaged" | "lost";
@@ -101,7 +101,7 @@ function shuffled<T>(items: readonly T[]): T[] {
 }
 
 /* ------------------------------------------------------------------------------------------
- * Artwork (blend_parcels.html, section 3: #p, #pd, #c)
+ * Artwork (parcel asset sheet, beam demo: parcel, damaged parcel, coin)
  * ---------------------------------------------------------------------------------------- */
 
 function ParcelArt({ damaged }: { damaged: boolean }) {
@@ -172,7 +172,7 @@ function Parcel({ trip, onDone }: { trip: Trip; onDone: (trip: Trip) => void }) 
       }}
       onAnimationComplete={() => onDone(trip)}
     >
-      <div className={`${ART} size-[1.125rem] sm:size-[1.375rem] xl:size-[1.625rem]`}>
+      <div className={`${ART} size-[22px] sm:size-6 lg:size-[26px] xl:size-7`}>
         <ParcelArt damaged={trip.kind === "damaged"} />
       </div>
     </motion.div>
@@ -195,7 +195,7 @@ function CoinMover({ coin, onDone }: { coin: Coin; onDone: (coin: Coin) => void 
       }}
       onAnimationComplete={() => onDone(coin)}
     >
-      <div className={`${ART} size-[1.125rem] sm:size-[1.375rem] xl:size-[1.625rem]`}>
+      <div className={`${ART} size-[22px] sm:size-6 lg:size-[26px] xl:size-7`}>
         <CoinArt />
       </div>
     </motion.div>

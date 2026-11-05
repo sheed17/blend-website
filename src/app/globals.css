@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./theme.css";
+@import "./parcel3d.css";
 
 /* dark: utilities only apply under a .dark class (never set), so pasted
    21st.dev components don't flip to dark mode with the OS setting. */

@@ -65,8 +65,9 @@
   --focus: var(--accent-strong);
   --accent-line: var(--accent); /* beams, arcs, progress marks on light backgrounds */
   /* Radial light behind sections */
-  --glow-hero: radial-gradient(closest-side, rgba(142, 228, 182, 0.22), rgba(142, 228, 182, 0)); /* mint, behind the hero diagram */
-  --glow-steps: radial-gradient(closest-side, rgba(61, 203, 127, 0.14), rgba(61, 203, 127, 0) 100%);
+  --glow-hero: radial-gradient(closest-side, rgba(142, 228, 182, 0.3), rgba(142, 228, 182, 0)); /* mint, behind the hero diagram */
+  /* Hero texture: ink dots at 6% on a 24px grid (Hero masks it to fade at the edges). */
+  --hero-dots: radial-gradient(circle, color-mix(in srgb, var(--ink) 6%, transparent) 1.25px, transparent 1.75px);
   --glow-footer: radial-gradient(closest-side, rgba(61, 203, 127, 0.11), rgba(142, 228, 182, 0.07) 55%, rgba(142, 228, 182, 0) 100%);
   --selection-bg: var(--accent);
   --selection-ink: var(--ink);
@@ -145,7 +146,6 @@
   --focus: var(--accent-strong);
   --accent-line: var(--brand); /* lime would vanish on white, so light-background lines are orange */
   --glow-hero: radial-gradient(closest-side, color-mix(in srgb, #fcffff 22%, transparent), transparent);
-  --glow-steps: radial-gradient(closest-side, color-mix(in srgb, #ee5001 14%, transparent), transparent 100%);
   --glow-footer: radial-gradient(closest-side, color-mix(in srgb, #ee5001 22%, transparent), color-mix(in srgb, #fff0e6 80%, transparent) 55%, transparent 100%);
   --selection-bg: var(--accent);
   --selection-ink: var(--ink);

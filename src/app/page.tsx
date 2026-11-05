@@ -8,6 +8,7 @@ import { Outcomes } from "@/components/sections/Outcomes";
 import { ScrollExpandVideo } from "@/components/sections/ScrollExpandVideo";
 import { Team } from "@/components/sections/Team";
 import { Vision } from "@/components/sections/Vision";
+import { WhyUnclaimed } from "@/components/sections/WhyUnclaimed";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <Hero />
       <Belief />
       <Facts />
+      <WhyUnclaimed />
       <HowItWorks />
       <ScrollExpandVideo />
       <Banner />

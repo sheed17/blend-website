@@ -42,11 +42,6 @@ export const beam = {
   moneyCaption: "Back to your brands",
   label:
     "Diagram: damaged shipments, lost packages, customer complaints, tracking exceptions, and carrier records flow into Blend, and the money goes back to your brands.",
-  stepLabels: [
-    "Diagram: a damaged shipment is found.",
-    "Diagram: the damaged-shipment claim travels into Blend, which files it with the carrier.",
-    "Diagram: the recovered money travels from Blend back to your brands.",
-  ],
 } as const;
 
 export const belief = {
@@ -83,26 +78,67 @@ export const facts = {
   ],
 } as const;
 
+/** Between the facts and How it works: why the money goes unclaimed. */
+export const whyUnclaimed = {
+  headline: "Why it never gets claimed.",
+  reasons: [
+    {
+      title: "Nobody owns it.",
+      body: "Claims aren’t anyone’s job. They land on whoever’s free, usually after a brand complains.",
+    },
+    {
+      title: "It takes too long.",
+      body: "Every claim needs tracking, item cost, photos, and the right carrier form. Each one eats close to an hour.",
+    },
+    {
+      title: "Nobody’s keeping score.",
+      body: "Brands rarely know what they’re owed. Lost packages nobody complains about never get looked at, and the deadlines quietly pass.",
+    },
+  ],
+  closing: "So the money stays with the carrier.",
+} as const;
+
 export const howItWorks = {
   headline: "How it works.",
+  /** Heading and closing line of each step's checklist card. */
+  diyLabel: "Doing it yourself",
+  diyDone: "Blend does this.",
+  /** Large line after the three steps. */
+  closing: "At 80,000 parcels a month, that’s hundreds of claims, and a full-time job nobody at your 3PL has.",
   steps: [
     {
       number: "01",
       title: "Find",
       body: "We surface every lost and damaged shipment across every brand in your warehouse, on UPS, FedEx, USPS, and regional carriers.",
-      before: "Damage reports scattered across inboxes, portals, and spreadsheets.",
+      diy: [
+        "Check tracking on every parcel, every day",
+        "Spot the ones that stopped moving or came back damaged",
+        "Dig damage reports out of brand emails",
+        "Track every deadline before it passes",
+      ],
     },
     {
       number: "02",
       title: "File",
       body: "We recover them under your accounts, built to each carrier’s exact requirements, inside every deadline.",
-      before: "Claims filed late, missing a document, or never filed at all.",
+      diy: [
+        "Pull the tracking history",
+        "Get the item’s cost from the brand",
+        "Chase the customer for three photos",
+        "Fill out a different form for each carrier",
+        "Repeat for every single package",
+      ],
     },
     {
       number: "03",
       title: "Return",
       body: "The money lands back where it belongs. You get a clean statement every month.",
-      before: "Credits that show up with no way to match them to a shipment.",
+      diy: [
+        "Wait weeks for the carrier",
+        "Answer their follow-up questions",
+        "Find the payment and match it to the claim",
+        "Credit the right brand",
+      ],
     },
   ],
 } as const;
