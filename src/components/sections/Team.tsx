@@ -2,10 +2,18 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { team } from "@/content/site";
 
-/** "Who we are": two people side by side (stacked below md). Text only, no photos. */
+/** True while a field still holds a "[PLACEHOLDER]" from site.ts. */
+const isPlaceholder = (value: string) => /^\[.*\]$/.test(value.trim());
+
+/**
+ * "Who we are": two people side by side (stacked below md). Text only, no photos.
+ * Renders nothing until every name in team.people is filled in.
+ */
 export function Team() {
+  if (team.people.some((person) => isPlaceholder(person.name))) return null;
+
   return (
-    <section aria-labelledby="team-title" className="border-t border-line bg-white py-20 md:py-28">
+    <section aria-labelledby="team-title" className="border-t border-line bg-background py-20 md:py-28">
       <Container>
         <Reveal>
           <h2

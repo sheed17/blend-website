@@ -22,35 +22,40 @@
  */
 
 /* ------------------------------------------------------------------------------------------
- * GREEN: the original palette. Values are exactly the pre-theme ones.
+ * GREEN: four greens only. Every green on the site is one of these (or one of them
+ * mixed with another / at an opacity):
+ *   brand #3DCB7F (fills)   deep #0F3D2A (dark sections, green text on light)
+ *   mint  #8EE4B6 (highlights, accents on dark)   ink #0B1410 (text)
+ * Page background #FAFAF7; cards and panels #FFFFFF so they lift off it.
  *
- * WCAG contrast: ink on accent 8.96 · ink on accent-hover 7.09 ·
- * accent-strong on white 5.36 / surface 5.03 / accent-tint 4.95 ·
- * white on deep 12.57 · accent-soft on deep 8.33 · body on white 7.76 ·
- * muted on white 4.98 / surface 4.67.
- * Never: white text on accent (2.09), accent as text or focus ring on white (2.09).
+ * WCAG contrast: ink on brand 8.96 · deep on white 12.2 / on #FAFAF7 11.7 ·
+ * white on deep 11.6 · mint on deep 7.7 · body on #FAFAF7 7.4 · muted on #FAFAF7 4.75.
+ * Never: white text on brand (2.09), brand or mint as text on light backgrounds.
  * ---------------------------------------------------------------------------------------- */
 :root,
 :root[data-theme="green"] {
-  /* Core */
-  --bg: #ffffff;
-  --surface: #f6f8f6;
+  /* The four greens */
+  --brand: #3dcb7f;
+  --deep: #0f3d2a;
+  --mint: #8ee4b6;
   --ink: #0b1410;
+
+  /* Core */
+  --bg: #fafaf7;
+  --surface: #ffffff; /* cards and panels */
   --muted: #68726d; /* darkened from #7C8781 (3.72:1, failed AA for small text) */
-  --accent: #3dcb7f;
-  --accent-strong: #147a4b;
-  --accent-soft: #8ee4b6;
-  --on-accent: #0b1410;
+  --accent: var(--brand);
+  --accent-strong: var(--deep); /* green text and focus rings on light backgrounds */
+  --accent-soft: var(--mint);
+  --on-accent: var(--ink);
   --border: #e5e9e6;
 
   /* Extended palette */
   --paper: #ffffff; /* white: cards, text on ink */
   --body: #4a5550; /* paragraph text */
-  --accent-hover: #2fb56d;
-  --accent-tint: #ecf9f2; /* soft backgrounds */
-  --brand: #3dcb7f; /* primary / big color blocks */
-  --on-brand: #0b1410;
-  --deep: #0c3b27; /* the dark Belief section */
+  --accent-hover: color-mix(in srgb, var(--deep) 15%, var(--brand)); /* brand, a touch deeper */
+  --accent-tint: color-mix(in srgb, var(--mint) 18%, var(--paper)); /* soft backgrounds */
+  --on-brand: var(--ink);
   --on-deep: #ffffff;
   --expiring: #b45309;
   --expiring-tint: #fef3e2;
@@ -59,10 +64,10 @@
   /* Roles */
   --focus: var(--accent-strong);
   --accent-line: var(--accent); /* beams, arcs, progress marks on light backgrounds */
-  /* Radial light behind sections (original literal stops, so green renders pixel-identical) */
-  --glow-hero: radial-gradient(closest-side, #ecf9f2, rgba(255, 255, 255, 0));
-  --glow-steps: radial-gradient(closest-side, rgba(61, 203, 127, 0.14), rgba(255, 255, 255, 0) 100%);
-  --glow-footer: radial-gradient(closest-side, rgba(61, 203, 127, 0.22), rgba(236, 249, 242, 0.8) 55%, rgba(255, 255, 255, 0) 100%);
+  /* Radial light behind sections */
+  --glow-hero: radial-gradient(closest-side, rgba(142, 228, 182, 0.22), rgba(142, 228, 182, 0)); /* mint, behind the hero diagram */
+  --glow-steps: radial-gradient(closest-side, rgba(61, 203, 127, 0.14), rgba(61, 203, 127, 0) 100%);
+  --glow-footer: radial-gradient(closest-side, rgba(61, 203, 127, 0.11), rgba(142, 228, 182, 0.07) 55%, rgba(142, 228, 182, 0) 100%);
   --selection-bg: var(--accent);
   --selection-ink: var(--ink);
 
@@ -74,18 +79,24 @@
   --hero: transparent; /* hero background (and the nav above it, at the top of the page) */
   --hero-ink: var(--ink); /* hero headline */
   --marker-ink: currentColor;
-  --marker-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath fill='%233DCB7F' d='M7 24C58 13 141 19 214 15C282 11 349 9 393 17C398 39 396 66 391 85C322 93 241 87 163 91C104 94 47 91 9 89C4 68 3 45 7 24Z'/%3E%3Cpath fill='%232FB56D' fill-opacity='0.45' d='M18 80C140 85 268 81 388 75L389 83C270 90 140 93 17 87Z'/%3E%3C/svg%3E");
+  /* Highlighter swipe: brand, with a lower edge of deep at 15% (reads as a slightly darker brand). */
+  --marker-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath fill='%233DCB7F' d='M7 24C58 13 141 19 214 15C282 11 349 9 393 17C398 39 396 66 391 85C322 93 241 87 163 91C104 94 47 91 9 89C4 68 3 45 7 24Z'/%3E%3Cpath fill='%230F3D2A' fill-opacity='0.15' d='M18 80C140 85 268 81 388 75L389 83C270 90 140 93 17 87Z'/%3E%3C/svg%3E");
+
+  --belief-overlay: color-mix(in srgb, var(--deep) 80%, transparent); /* over the Belief video */
+  --expand-overlay: rgba(11, 20, 16, 0.3); /* ink at 30% under the expanding video's line */
+  --shine-a: var(--deep); /* Shine Border on the closing button: dark green + mint */
+  --shine-b: var(--mint);
 
   --banner: var(--surface);
   --banner-ink: var(--ink);
   --banner-accent: var(--accent-strong); /* the banner's second line */
   --banner-line: var(--border);
-  --banner-glow: radial-gradient(closest-side, rgba(61, 203, 127, 0.16), rgba(61, 203, 127, 0) 100%);
-  --banner-glow-2: radial-gradient(closest-side, rgba(142, 228, 182, 0.28), rgba(142, 228, 182, 0) 100%);
+  --banner-glow: radial-gradient(closest-side, rgba(61, 203, 127, 0.08), rgba(61, 203, 127, 0) 100%);
+  --banner-glow-2: radial-gradient(closest-side, rgba(142, 228, 182, 0.14), rgba(142, 228, 182, 0) 100%);
 
-  --logo-back: var(--accent-strong);
-  --logo-front: var(--accent);
-  --logo-overlap: var(--accent-soft);
+  --logo-back: var(--deep);
+  --logo-front: var(--brand);
+  --logo-overlap: var(--mint);
 
   /* Beam diagram */
   --node: var(--paper);
@@ -149,6 +160,11 @@
   --marker-ink: var(--ink); /* the marked phrase reads ink-on-lime, never white-on-lime */
   --marker-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath fill='%23C8FD03' d='M7 24C58 13 141 19 214 15C282 11 349 9 393 17C398 39 396 66 391 85C322 93 241 87 163 91C104 94 47 91 9 89C4 68 3 45 7 24Z'/%3E%3Cpath fill='%23A6D400' fill-opacity='0.45' d='M18 80C140 85 268 81 388 75L389 83C270 90 140 93 17 87Z'/%3E%3C/svg%3E");
 
+  --belief-overlay: color-mix(in srgb, #0b0b0b 80%, transparent);
+  --expand-overlay: color-mix(in srgb, #0b0b0b 30%, transparent);
+  --shine-a: var(--accent); /* lime shine on the ink button */
+  --shine-b: var(--accent);
+
   --banner: var(--brand);
   --banner-ink: var(--on-brand);
   --banner-accent: var(--ink);
@@ -168,6 +184,15 @@
   --hub-shadow: 0 12px 36px -12px color-mix(in srgb, var(--ink) 28%, transparent);
   --beam: var(--accent-line);
   --beam-track: var(--muted);
+}
+
+/*
+ * Knockout constants for video-filled text (src/components/ui/video-text.tsx).
+ * Pure white/black so the screen + multiply blends are exact. Same in every theme.
+ */
+:root {
+  --knockout-light: #ffffff;
+  --knockout-dark: #000000;
 }
 
 /* Orange surfaces (hero, and the nav while it sits on the hero): small text goes ink. */

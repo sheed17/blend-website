@@ -4,7 +4,7 @@ import { vision } from "@/content/site";
 
 export function Vision() {
   return (
-    <section aria-labelledby="vision" className="border-t border-line bg-white py-28 md:py-40">
+    <section aria-labelledby="vision" className="border-t border-line bg-background py-28 md:py-40">
       <Container>
         <Reveal>
           <div className="max-w-[20ch] text-balance text-[clamp(2.75rem,6.8vw,6.5rem)] font-semibold leading-[0.98] tracking-headline">

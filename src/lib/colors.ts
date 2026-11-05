@@ -8,7 +8,4 @@ export const colors = {
   beam: "var(--beam)",
   /** Quiet base paths in the beam diagram. */
   beamTrack: "var(--beam-track)",
-  /** Accent lines on light backgrounds. */
-  accentLine: "var(--accent-line)",
-  ink: "var(--ink)",
 } as const;

@@ -115,7 +115,7 @@ export const outcomes = {
   headline: "What changes.",
   cards: [
     { title: "Recovered", body: "Money you were owed, back in your account." },
-    { title: "Effortless", body: "An hour of setup. Nothing to run." },
+    { title: "Effortless", body: "An hour of setup. We do the filing." },
     { title: "Compounding", body: "Every claim we file makes the next one faster." },
   ],
   setupSteps: ["Carrier accounts connected", "Brands confirmed", "Nothing else to do"],
@@ -125,6 +125,30 @@ export const vision = {
   statement: "Today, carrier claims for 3PLs.",
   followup: "Next, the rest of it.",
   note: "Lost and damaged shipments across every carrier you use, then retail deductions, then the rest of the back office.",
+} as const;
+
+/** Scroll-expanding video between How it works and the banner. */
+export const expandVideo = {
+  line: "Every package leaves a paper trail.",
+} as const;
+
+/** "Questions", above the footer's closing line. */
+export const faq = {
+  headline: "Questions",
+  items: [
+    {
+      q: "Do you need our carrier login?",
+      a: "No. You add us as our own user on your carrier accounts. Where the carrier allows it, that user can only file claims, and you can remove it any time.",
+    },
+    { q: "Which carriers do you handle?", a: "Every carrier you ship with: UPS, FedEx, USPS, and regionals." },
+    { q: "What does it cost?", a: "First month free. After that, 25% of what we recover. Nothing if nothing is." },
+    { q: "How do our brands get the money?", a: "Carriers pay you directly. You credit each brand on your monthly statement." },
+    {
+      q: "What if a claim is denied?",
+      a: "We find out why. If the carrier is wrong, we dispute it. You owe nothing on denied claims.",
+    },
+    { q: "How long does setup take?", a: "About an hour of your time. First claims are filed within a week." },
+  ],
 } as const;
 
 /** Landing page, above the footer. Placeholders until the real names and links are in. */

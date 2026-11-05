@@ -7,7 +7,7 @@ import { facts } from "@/content/site";
 /** Industry figures, each linked to its source. Numbers in Geist Mono, counting up once. */
 export function Facts() {
   return (
-    <section aria-labelledby="facts-title" className="bg-white py-28 md:py-40">
+    <section aria-labelledby="facts-title" className="bg-background pb-14 pt-28 md:pb-20 md:pt-40">
       <Container>
         <SectionHeader id="facts-title" headline={facts.headline} />
 

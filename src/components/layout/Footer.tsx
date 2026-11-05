@@ -4,6 +4,7 @@ import { Logo } from "@/components/brand/Logo";
 import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { PillButton } from "@/components/primitives/PillButton";
+import { VideoText } from "@/components/ui/video-text";
 import { footer, site } from "@/content/site";
 import { CONTACT_EMAIL, CONTACT_HREF } from "@/lib/site";
 
@@ -15,7 +16,7 @@ async function CurrentYear() {
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-white">
+    <footer className="relative overflow-hidden bg-background">
       {/* Faint accent glow rising from the bottom edge */}
       <div
         aria-hidden="true"
@@ -24,10 +25,16 @@ export function Footer() {
 
       <Container className="relative pt-36 text-center md:pt-48">
         <Reveal>
-          <p className="mx-auto max-w-[14ch] text-balance text-[clamp(3rem,8vw,7.5rem)] font-semibold leading-[0.95] tracking-headline text-ink">
+          {/* Filled with the strip video from 640px up; plain ink below that and with reduced motion. */}
+          <VideoText
+            as="p"
+            src="/media/strip.mp4"
+            videoClassName="brightness-[0.7] contrast-125 saturate-125"
+            className="mx-auto max-w-[14ch] text-balance text-[clamp(3rem,12vw,12rem)] font-bold leading-[0.9] tracking-headline text-ink"
+          >
             {footer.tagline}
-          </p>
-          <PillButton href={CONTACT_HREF} className="mt-12">
+          </VideoText>
+          <PillButton href={CONTACT_HREF} shine className="mt-12">
             {site.contactLabel}
           </PillButton>
         </Reveal>
@@ -54,6 +61,11 @@ export function Footer() {
               © <CurrentYear /> Blend
             </p>
           </div>
+        </div>
+
+        {/* Oversized wordmark across the full container width (decorative; the logo above is the label). */}
+        <div aria-hidden="true" className="@container select-none">
+          <p className="footer-wordmark font-sans font-bold lowercase leading-[0.78] tracking-wordmark text-ink/8">blend</p>
         </div>
       </Container>
     </footer>

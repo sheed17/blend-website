@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { ShineBorder } from "@/components/ui/shine-border";
 import { cn } from "@/lib/utils";
 
 const variants = {
@@ -15,12 +16,15 @@ export function PillButton({
   children,
   variant = "brand",
   size = "md",
+  shine = false,
   className,
 }: {
   href: string;
   children: ReactNode;
   variant?: keyof typeof variants;
   size?: "sm" | "md";
+  /** Subtle animated Shine Border (theme --shine-a/b). Hidden with reduced motion. Use once. */
+  shine?: boolean;
   className?: string;
 }) {
   return (
@@ -30,9 +34,18 @@ export function PillButton({
         "group inline-flex items-center gap-2.5 rounded-full font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus",
         size === "md" ? "py-3.5 pl-6 pr-5 text-base" : "py-2 pl-4 pr-3.5 text-sm",
         variants[variant],
+        shine && "relative",
         className,
       )}
     >
+      {shine && (
+        <ShineBorder
+          borderWidth={2}
+          duration={10}
+          shineColor={["var(--shine-a)", "var(--shine-b)"]}
+          className="motion-reduce:hidden"
+        />
+      )}
       {children}
       <ArrowRight
         aria-hidden="true"

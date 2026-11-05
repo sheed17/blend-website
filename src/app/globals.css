@@ -78,13 +78,27 @@
   --color-input: var(--border);
   --color-ring: var(--focus);
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Magic UI Shine Border */
+  --animate-shine: shine var(--duration) infinite linear;
+  @keyframes shine {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    to {
+      background-position: 0% 0%;
+    }
+  }
 }
 
 @theme {
@@ -94,6 +108,28 @@
 
 :root {
   --radius: 0.875rem;
+}
+
+/*
+ * Fonts: <html data-font="…"> comes from ACTIVE_FONT in src/lib/font.ts.
+ * --font-body feeds --font-sans (headings and body). Each font sets its own
+ * headline tracking, since letter-spacing that looks tight in one family can
+ * look cramped or loose in another. Mono is always Geist Mono.
+ */
+:root,
+:root[data-font="geist"] {
+  --font-body: var(--font-geist-sans);
+}
+
+/*
+ * Switzer's default sidebearings are ~0.02em tighter per letter pair than
+ * Geist's (n .117 vs .141, H .135 vs .160, at near-identical x-height), so it
+ * needs less negative tracking to land at the same visual density.
+ */
+:root[data-font="switzer"] {
+  --font-body: var(--font-switzer);
+  --tracking-headline: -0.025em;
+  --tracking-wordmark: -0.03em;
 }
 
 @layer base {
@@ -142,6 +178,37 @@
     background-size: 220px 220px;
     opacity: 0.18;
     mix-blend-mode: overlay;
+  }
+
+  /*
+   * Footer wordmark: sized in container-query units so "blend" spans the container.
+   * The ratio depends on the font, so each data-font sets its own (measured).
+   */
+  .footer-wordmark {
+    font-size: 40.2cqw; /* switzer */
+  }
+
+  :root[data-font="geist"] .footer-wordmark {
+    font-size: 39.3cqw;
+  }
+
+  /*
+   * Scroll-expanding video card. --p (0 → 1) is driven by scroll; --s0 is the start
+   * scale (set per breakpoint). Radius is divided by the scale so the visible corner
+   * goes from 28px to 0 regardless of size.
+   */
+  .expand-card {
+    --p: 0;
+    --s: calc(var(--s0) + (1 - var(--s0)) * var(--p));
+    transform: scale(var(--s));
+    border-radius: calc(28px * (1 - var(--p)) / var(--s));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .expand-card {
+      transform: none;
+      border-radius: 0;
+    }
   }
 
   /*

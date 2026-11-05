@@ -65,7 +65,7 @@ export function HowItWorks() {
   const onActive = (i: number) => setActive(i as 0 | 1 | 2);
 
   return (
-    <section id="how-it-works" aria-labelledby="how-it-works-title" className="scroll-mt-16 bg-white py-28 md:py-40">
+    <section id="how-it-works" aria-labelledby="how-it-works-title" className="scroll-mt-16 bg-background pb-28 pt-14 md:pb-40 md:pt-20">
       <Container>
         <SectionHeader id="how-it-works-title" headline={howItWorks.headline} />
 

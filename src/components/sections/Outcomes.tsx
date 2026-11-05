@@ -6,7 +6,6 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Container } from "@/components/primitives/Container";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { outcomes } from "@/content/site";
-import { colors } from "@/lib/colors";
 import { cn } from "@/lib/utils";
 
 /** Abstract rising bars on ink: money coming back, month over month. No axes, no numbers. */
@@ -49,31 +48,11 @@ function SetupChecklist() {
   );
 }
 
-/** Nested arcs that widen outward: each claim builds on the last. */
-function CompoundingArcs() {
-  const radii = [18, 34, 50, 66, 82];
-  return (
-    <svg aria-hidden="true" viewBox="0 0 100 100" className="h-36 w-auto sm:h-40">
-      {radii.map((r, i) => (
-        <path
-          key={r}
-          d={`M 4 ${100 - 4} A ${r} ${r} 0 0 1 ${4 + r} ${100 - 4 - r}`}
-          fill="none"
-          style={{ stroke: i === radii.length - 1 ? colors.accentLine : colors.ink }}
-          strokeOpacity={i === radii.length - 1 ? 1 : 0.15 + i * 0.15}
-          strokeWidth={i === radii.length - 1 ? 5 : 3.5}
-          strokeLinecap="round"
-        />
-      ))}
-    </svg>
-  );
-}
-
 export function Outcomes() {
   const [recovered, effortless, compounding] = outcomes.cards;
 
   return (
-    <section aria-labelledby="outcomes-title" className="bg-white py-28 md:py-40">
+    <section aria-labelledby="outcomes-title" className="bg-background py-28 md:py-40">
       <Container>
         <SectionHeader id="outcomes-title" headline={outcomes.headline} />
 
@@ -116,7 +95,6 @@ export function Outcomes() {
                   </h3>
                   <p className="mt-4 text-[17px] leading-snug text-body">{compounding.body}</p>
                 </div>
-                <CompoundingArcs />
               </div>
             </Reveal>
           </li>

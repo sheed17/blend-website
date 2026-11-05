@@ -68,7 +68,7 @@ export function ScrollTextReveal({
   const range = (i: number): [number, number] => [(i / total) * END, ((i + 1) / total) * END];
 
   return (
-    <div ref={ref} className={cn("relative", reduce ? "py-32 md:py-44" : "h-[260svh]", className)}>
+    <div ref={ref} className={cn("relative", reduce ? "py-32 md:py-44" : "h-[180svh]", className)}>
       <div className={cn(!reduce && "sticky top-0 flex h-svh items-center")}>
         <Container>
           <div className="max-w-[22ch] text-balance text-[clamp(2.5rem,6.6vw,6.5rem)] font-semibold leading-[1] tracking-headline">

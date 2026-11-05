@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 
 /**
  * The one contact address. Every "Get in touch" button and mailto link uses it.
- * TODO: swap in the real address once the domain is live.
  */
-export const CONTACT_EMAIL = "hello@[DOMAIN]";
+export const CONTACT_EMAIL = "support@getblend.io";
 export const CONTACT_HREF = `mailto:${CONTACT_EMAIL}`;
 
 /**
